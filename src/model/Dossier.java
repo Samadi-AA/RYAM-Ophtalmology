@@ -1,24 +1,19 @@
-import java.util.Date;
+package model;
 
-public class dossier {
-	private int numDossier;
-	private Date dateCreationDossier;
+public class Dossier {
 	
-	public dossier(int numDossier,Date dateCreationDossier) {
-		this.numDossier=numDossier;
-		this.dateCreationDossier=dateCreationDossier;
-	}
+/*--- Properties ---*/
+
 	
-	public int getNumDossier() {
-		return numDossier;
-	}
-	public void setNumDossier(int numDossier) {
-		this.numDossier = numDossier;
-	}
-	public Date getDateCreationDossier() {
-		return dateCreationDossier;
-	}
-	public void setDateCreationDossier(Date dateCreationDossier) {
-		this.dateCreationDossier = dateCreationDossier;
-	}
+/*--- Constructor ---*/
+
+
+/*--- Getters and Setters ---*/
+
+
+/*--- Methods ---*/
+
+	
+	
+
 }
