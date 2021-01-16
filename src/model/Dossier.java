@@ -7,8 +7,7 @@ public class Dossier {
 	
 /*--- Constructor ---*/
 	public Dossier() {
-		num++;
-		System.out.println(num);
+		ajouterDossier(num++, date);
 	}
 	
 /*--- Getters and Setters ---*/
