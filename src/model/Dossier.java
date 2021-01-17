@@ -4,11 +4,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import control.DatabaseConnection;
+
 public class Dossier {
 	
 /*--- Properties ---*/
 	
-	private static long numDossier=0;
+	static long numDossier=0;
 	private Date dateCreationDossier;
 	private DatabaseConnection Connect = new DatabaseConnection();
 
@@ -42,7 +44,7 @@ public class Dossier {
 		
 			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(insertQuery);
 			
-			dateCreationDossier=System.currentTimeMillis();
+			dateCreationDossier = System.currentTimeMillis();
 			
 			preparedStmt.setLong(1, Dossier.numDossier);
 			preparedStmt.setDate(2,dateCreationDossier);

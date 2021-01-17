@@ -1,15 +1,16 @@
 create database CabinetOphta;
+
 use CabinetOphta;
 
 CREATE TABLE doctor (
-    username VARCHAR(15) PRIMARY KEY,
+    username VARCHAR(15) PRIMARY KEY default("doctor"),
     userkey VARCHAR(30),
     nom VARCHAR(30) NOT NULL,
     prenom VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE secretaire (
-    username VARCHAR(15) PRIMARY KEY,
+    username VARCHAR(15) PRIMARY KEY default("secretaire"),
     userkey VARCHAR(30) NOT NULL
 );
 
