@@ -1,4 +1,4 @@
-package View.secretaireHome;
+package view.secretaireHome;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

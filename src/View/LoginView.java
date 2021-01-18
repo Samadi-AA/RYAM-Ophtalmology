@@ -4,7 +4,7 @@
  ***** Date       : 17 janv. 2021
  ******************************************/ 
 
-package View;
+package view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,11 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.mysql.jdbc.ResultSet;
-import com.mysql.jdbc.Statement;
-
 import control.DatabaseConnection;
-import model.Dossier;
 
 public class LoginView implements ActionListener {
 

@@ -1,15 +1,11 @@
 package model;
 
-<<<<<<< HEAD
-public class CompteDocteur {
-=======
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import control.DatabaseConnection;
 
 public class CompteDocteur extends CompteSecretaire {
->>>>>>> 10684b310a7f4dd4217eed56e8b70f29db087f5a
 	
 /*--- Properties ---*/
 	private String lastNameDoc;
@@ -21,6 +17,7 @@ public class CompteDocteur extends CompteSecretaire {
 		super(userKey);
 		firstNameDoc = firstName;
 		lastNameDoc = lastName;
+		
 	}
 
 /*--- Getters and Setters ---*/
@@ -63,15 +60,17 @@ public class CompteDocteur extends CompteSecretaire {
 		 
 	}
 		
-}
-	
-//    its just a test :
-//
-//public static void main(String[] args) {
-//	  SecretaireAccount s = new SecretaireAccount("Admin"); 
-//	  DoctorAccount d = new DoctorAccount("DocTest", "test", "admin"); 
-//	  d.modifierCompte("1name", "2name", "123456789");
-//	  System.out.println(s.userKey); 
-//	  System.out.println(d.userKey); 
 //}
+	
+    //its just a test :
+
+public static void main(String[] args) {
+	CompteSecretaire s = new CompteSecretaire("Admin"); 
+	CompteDocteur d = new CompteDocteur("DocTest", "test", "admin");
+		
+	d.modifierCompte("1name", "2name");
+	System.out.println(s.userKey); 
+	System.out.println(d.userKey); 
+}
+}
 	

@@ -1,4 +1,4 @@
-package View;
+package view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,9 +7,8 @@ import java.awt.Insets;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import View.secretaireHome.menu;
-import View.secretaireHome.patientRDV;
-import View.secretaireHome.rdv;
+import view.secretaireHome.*;
+
 
 public class secretaireView {
 		

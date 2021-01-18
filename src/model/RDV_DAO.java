@@ -57,7 +57,7 @@ public class RDV_DAO {
 			
 			preparedStmt.setInt(1, r.getNumRDV());
 			preparedStmt.setDate(2, r.getDateRDV());
-			preparedStmt.setFloat(3, r.getHeureRDV());
+			preparedStmt.setDate(3, r.getHeureRDV());
 			
 			preparedStmt.setInt(4, r.getNumRDV());
 			

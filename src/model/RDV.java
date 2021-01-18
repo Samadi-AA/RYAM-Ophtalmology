@@ -42,9 +42,7 @@ public class RDV {
 	}
 
 	/*--- methods ---*/
-	
-	//Ajoute RDV
-	
+		
 	public void ajouteRDV() {
 		try {
 			String insertQuery = 
@@ -110,14 +108,5 @@ public class RDV {
 			System.out.println(e.getMessage());
 		}
 	}
-<<<<<<< HEAD
-=======
-
-	
-	/*
-	public void imprimiRDV(RDV r) {
->>>>>>> 10684b310a7f4dd4217eed56e8b70f29db087f5a
-
-	}*/
 
 }

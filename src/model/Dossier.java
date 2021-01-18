@@ -10,11 +10,7 @@ public class Dossier {
 	
 /*--- Properties ---*/
 	
-<<<<<<< HEAD
 	private static long numDossier = 0;
-=======
-	static long numDossier=0;
->>>>>>> 10684b310a7f4dd4217eed56e8b70f29db087f5a
 	private Date dateCreationDossier;
 	private DatabaseConnection Connect = new DatabaseConnection();
 
@@ -51,11 +47,6 @@ public class Dossier {
 		
 			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(insertQuery);
 			
-<<<<<<< HEAD
-=======
-			dateCreationDossier = System.currentTimeMillis();
-			
->>>>>>> 10684b310a7f4dd4217eed56e8b70f29db087f5a
 			preparedStmt.setLong(1, Dossier.numDossier);
 			preparedStmt.setDate(2,dateCreationDossier);
 			

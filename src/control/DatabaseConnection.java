@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.mysql.jdbc.Statement;
-
 public class DatabaseConnection {
 	
 	Connection connection;
@@ -33,5 +31,4 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 	}
-	
 }

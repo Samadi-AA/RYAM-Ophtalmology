@@ -1,13 +1,7 @@
 package model;
 
-<<<<<<< HEAD
-public class CompteSecretaire {
-	
-/*--- Properties ---*/
-=======
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
->>>>>>> 10684b310a7f4dd4217eed56e8b70f29db087f5a
 
 import control.DatabaseConnection;
 
@@ -31,7 +25,7 @@ public class CompteSecretaire {
 	}
 
 /*--- Methods ---*/
-	public void modifierMotDePass(String userKey) {
+	public void modifierUserKey(String userKey) {
 		//setUserKey(userKey);
 		
 		try {
