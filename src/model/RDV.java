@@ -3,6 +3,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import control.DatabaseConnection;
+
 public class RDV {
 	
 /*--- Properties ---*/
@@ -108,11 +110,5 @@ public class RDV {
 			System.out.println(e.getMessage());
 		}
 	}
-	
-	
-
-	
-	/*
-	public void imprimiRDV(RDV r) {
 
 }

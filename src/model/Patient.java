@@ -7,16 +7,22 @@ import control.DatabaseConnection;
 public class Patient {
 
 /*--- Properties ---*/
-	int numPatient,numDossier;
+	long numPatient,numDossier;
 	String nom,prenom,CIN,sexe,adresse;
 	Date dateNaissance;
-	int telephone;
+	String telephone;
 
 /*--- Constructor ---*/
 	
-	public Patient(int numDossier, String nom, String prenom, String cIN, String sexe, String adresse, int telephone) {
+	public Patient() {
+		Dossier dossier = new Dossier();
+		numDossier = (int) dossier.getNumDossier();
+	}
+	
+	public Patient(String nom, String prenom, String cIN, String sexe, String adresse, String telephone) {
 		super();
-		this.numDossier = numDossier;
+		Dossier dossier = new Dossier();
+		numDossier = (int) dossier.getNumDossier();
 		this.nom = nom;
 		this.prenom = prenom;
 		CIN = cIN;
@@ -25,10 +31,6 @@ public class Patient {
 		this.telephone = telephone;
 	}
 	
-	public Patient() {
-		//Dossier dossier = new Dossier();
-		//numDossier = dossier.numDossier;
-	}
 
 /*--- Getters and Setters ---*/
 
@@ -52,8 +54,8 @@ public class Patient {
 			preparedStmt.setString(4, sexe);
 			preparedStmt.setDate(5, dateNaissance);
 			preparedStmt.setString(6, adresse);
-			preparedStmt.setInt(7,telephone);
-			preparedStmt.setInt(8,numDossier);
+			preparedStmt.setString(7,telephone);
+			preparedStmt.setLong(8,numDossier);
 			
 			preparedStmt.execute();
 			Connect.closeConnection();
@@ -89,8 +91,8 @@ public class Patient {
 			preparedStmt.setString(4, sexe);
 			preparedStmt.setDate(5, dateNaissance);
 			preparedStmt.setString(6, adresse);
-			preparedStmt.setInt(7,telephone);
-			preparedStmt.setInt(8,numDossier);
+			preparedStmt.setString(7,telephone);
+			preparedStmt.setLong(8,numDossier);
 			
 			preparedStmt.execute();
 			Connect.closeConnection();
@@ -102,6 +104,24 @@ public class Patient {
 	
 	}
 	
+	
+	public void supprimerPatient() {
+		try {
+			DatabaseConnection Connect = new DatabaseConnection();
+			
+			String deleteQuery="delete from patient where cin = ?";
+			
+			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(deleteQuery);
+			
+			preparedStmt.setString(1, CIN);
+			
+			preparedStmt.execute();
+			Connect.closeConnection();
+		}
+		catch(SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 
 }

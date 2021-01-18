@@ -14,12 +14,12 @@ CREATE TABLE secretaire (
 );
 
 CREATE TABLE dossier (
-    num_dossier INT PRIMARY KEY,
+    num_dossier BIGINT PRIMARY KEY,
     date_creation DATE
 );
 
 CREATE TABLE patient (
-    num_patient INT PRIMARY KEY AUTO_INCREMENT,
+    num_patient BIGINT PRIMARY KEY AUTO_INCREMENT,
     CIN VARCHAR(15) UNIQUE,
     nom VARCHAR(30) NOT NULL,
     prenom VARCHAR(30) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE patient (
     date_naissance DATE,
     adresse TEXT(100),
     tel VARCHAR(15),
-    num_dossier INT,
+    num_dossier BIGINT NOT NULL UNIQUE,
     CONSTRAINT patient_dossier_fk
         FOREIGN KEY(num_dossier) 
         REFERENCES dossier(num_dossier)
@@ -36,9 +36,9 @@ CREATE TABLE patient (
 );
 
 CREATE TABLE RDV (
-    num_rdv INT PRIMARY KEY,
+    num_rdv BIGINT PRIMARY KEY,
     nom_pat VARCHAR(60),
-    num_pat INT,
+    num_pat BIGINT,
     date_rdv DATE,
     heur_rdv TIMESTAMP,
     date_resevation DATE,
@@ -48,8 +48,8 @@ CREATE TABLE RDV (
 );
 
 CREATE TABLE visite (
-    num_visite INT PRIMARY KEY,
-    num_dossier INT NOT NULL,
+    num_visite BIGINT PRIMARY KEY,
+    num_dossier BIGINT NOT NULL,
     date_visite DATE,
     prescription TEXT,
     symptome TEXT,

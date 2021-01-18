@@ -1,6 +1,6 @@
 package model;
 
-public class Compte {
+public class CompteDocteur {
 	
 /*--- Properties ---*/
 

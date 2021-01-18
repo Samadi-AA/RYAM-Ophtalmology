@@ -4,19 +4,21 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import control.DatabaseConnection;
+
 public class Dossier {
 	
 /*--- Properties ---*/
 	
-	private static long numDossier=0;
+	private static long numDossier = 0;
 	private Date dateCreationDossier;
 	private DatabaseConnection Connect = new DatabaseConnection();
 
 	
 /*--- Constructor ---*/
 	public Dossier() {
+		numDossier++;
 		this.AjouteDossier();
-		Dossier.numDossier++;
 	}
 
 /*--- Getters and Setters ---*/
@@ -38,11 +40,12 @@ public class Dossier {
 	
 	public void AjouteDossier() {
 		try {
+			
+			dateCreationDossier = new Date(System.currentTimeMillis());
+			
 			String insertQuery="insert into dossier values(?,?)";
 		
 			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(insertQuery);
-			
-			dateCreationDossier=System.currentTimeMillis();
 			
 			preparedStmt.setLong(1, Dossier.numDossier);
 			preparedStmt.setDate(2,dateCreationDossier);
@@ -56,7 +59,7 @@ public class Dossier {
 		 
 	}
 	
-	public void deletDossier() {
+	public void supprimerDossier() {
 		try {
 			String deleteQuery="delete from dossier where num_dossier=?";
 			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(deleteQuery);
