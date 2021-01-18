@@ -1,4 +1,4 @@
-package secretaireHome;
+package View.secretaireHome;
 
 import java.util.Properties;
 

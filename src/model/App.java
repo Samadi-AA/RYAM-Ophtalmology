@@ -1,7 +1,6 @@
 package model;
 
 import java.sql.*;
-import model.RDV_DAO;
 
 import model.RDV; 
 
@@ -19,6 +18,7 @@ public class App {
 		Dossier d1 = new Dossier();
 		Dossier d2 = new Dossier();
 		Dossier d3 = new Dossier();
+		
 	};
 
 }

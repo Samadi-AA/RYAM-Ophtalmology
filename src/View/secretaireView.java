@@ -1,4 +1,4 @@
-
+package View;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,14 +7,15 @@ import java.awt.Insets;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import secretaireHome.menu;
-import secretaireHome.patientRDV;
-import secretaireHome.rdv;
+import View.secretaireHome.menu;
+import View.secretaireHome.patientRDV;
+import View.secretaireHome.rdv;
 
 public class secretaireView {
 		
 		static JFrame srcretaireFrame;
 		static JPanel container;
+		
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		container = new JPanel();

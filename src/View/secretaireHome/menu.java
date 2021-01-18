@@ -1,4 +1,5 @@
-package secretaireHome;
+package View.secretaireHome;
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 
