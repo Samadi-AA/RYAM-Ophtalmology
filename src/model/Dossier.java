@@ -6,19 +6,19 @@ import java.sql.SQLException;
 
 import control.DatabaseConnection;
 
-public class Dossier {
+public class Dossier implements CRUD{
 	
 /*--- Properties ---*/
-	
-	private static long numDossier = 0;
+	private static long numIncrement = 0;
+	private long numDossier;
 	private Date dateCreationDossier;
-	private DatabaseConnection Connect = new DatabaseConnection();
-
+	private DatabaseConnection connect;
 	
 /*--- Constructor ---*/
 	public Dossier() {
-		numDossier++;
-		this.AjouteDossier();
+		numIncrement++;
+		numDossier = numIncrement;
+		dateCreationDossier = new Date(System.currentTimeMillis());
 	}
 
 /*--- Getters and Setters ---*/
@@ -27,7 +27,7 @@ public class Dossier {
 		return numDossier;
 	}
 	public void setNumDossier(int numDossier) {
-		Dossier.numDossier = numDossier;
+		this.numDossier = numDossier;
 	}
 	public Date getDateCreationDossier() {
 		return dateCreationDossier;
@@ -36,42 +36,53 @@ public class Dossier {
 		this.dateCreationDossier = dateCreationDossier;
 	}
 
-/*--- Methods ---*/
-	
-	public void AjouteDossier() {
+/*--- Methods ---*/	
+
+	@Override
+	public boolean Ajouter() {
 		try {
+			connect = new DatabaseConnection();
+			String insertQuery="insert into dossier (num_dossier, date_creation) values(?,?)";
 			
-			dateCreationDossier = new Date(System.currentTimeMillis());
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(insertQuery);
 			
-			String insertQuery="insert into dossier values(?,?)";
-		
-			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(insertQuery);
-			
-			preparedStmt.setLong(1, Dossier.numDossier);
-			preparedStmt.setDate(2,dateCreationDossier);
+			preparedStmt.setLong(1, numDossier);
+			preparedStmt.setDate(2, dateCreationDossier);
 			
 			preparedStmt.execute();
-			Connect.closeConnection();
+			connect.closeConnection();
 		}
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
+			return false;
 		}
-		 
+		return true;
 	}
-	
-	public void supprimerDossier() {
+
+	@Override
+	public boolean Modifier() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean Supprimer() {
 		try {
-			String deleteQuery="delete from dossier where num_dossier=?";
-			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(deleteQuery);
+			connect = new DatabaseConnection();
+			String deleteQuery="delete from dossier where num_dossier = ?";
 			
-			preparedStmt.setLong(1, Dossier.numDossier);
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(deleteQuery);
+			
+			preparedStmt.setLong(1, numDossier);
 			
 			preparedStmt.execute();
-			Connect.closeConnection();
+			connect.closeConnection();
 		}
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
+			return false;
 		}
+		return true;
 	}
 
 }

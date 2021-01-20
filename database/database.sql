@@ -22,8 +22,8 @@ CREATE TABLE dossier (
 CREATE TABLE patient (
     num_patient BIGINT PRIMARY KEY AUTO_INCREMENT,
     CIN VARCHAR(15) UNIQUE,
-    nom VARCHAR(30) NOT NULL,
-    prenom VARCHAR(30) NOT NULL,
+    nom VARCHAR(30),
+    prenom VARCHAR(30),
     sexe VARCHAR(15),
     date_naissance DATE,
     adresse TEXT(100),

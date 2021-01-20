@@ -5,72 +5,91 @@ import java.sql.SQLException;
 
 import control.DatabaseConnection;
 
-public class CompteDocteur extends CompteSecretaire {
+public class CompteDocteur extends CompteSecretaire implements CRUD{
 	
 /*--- Properties ---*/
-	private String lastNameDoc;
-	private String firstNameDoc;
+	private String nomDocteur;
+	private String prenomDocteur;
 	private DatabaseConnection connect = new DatabaseConnection();
 	
 /*--- Constructor ---*/
-	public CompteDocteur(String firstName, String lastName, String userKey) {
+	public CompteDocteur(String prenomDocteur, String nomDocteur, String userKey) {
 		super(userKey);
-		firstNameDoc = firstName;
-		lastNameDoc = lastName;
-		
+		this.prenomDocteur = prenomDocteur;
+		this.nomDocteur = nomDocteur;
 	}
 
 /*--- Getters and Setters ---*/
-	public String getLastNameDoc() {
-		return lastNameDoc;
+	public String getNomDocteur() {
+		return nomDocteur;
 	}
 
-	public String getFirstNameDoc() {
-		return firstNameDoc;
+	public void setNomDocteur(String nomDocteur) {
+		this.nomDocteur = nomDocteur;
 	}
 
-	public void setLastNameDoc(String lastNameDoc) {
-		this.lastNameDoc = lastNameDoc;
+	public String getPrenomDocteur() {
+		return prenomDocteur;
 	}
 
-	public void setFirstNameDoc(String firstNameDoc) {
-		this.firstNameDoc = firstNameDoc;
+	public void setPrenomDocteur(String prenomDocteur) {
+		this.prenomDocteur = prenomDocteur;
 	}
 
 /*--- Methods ---*/
-	public void modifierCompte(String firstName, String lastName) {
-		
-//		setFirstNameDoc(firstName);
-//		setLastNameDoc(lastName);
-		
+
+	
+	@Override
+	public boolean Ajouter() {
+		try {						
+			String insertQuery = 
+					"insert into doctor("
+					+ "userkey, nom, prenom)"
+					+ " values (?, ?, ?)";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(insertQuery);
+			
+			preparedStmt.setString(1, userKey);
+			preparedStmt.setString(2, nomDocteur);
+			preparedStmt.setString(3, prenomDocteur);
+			
+			preparedStmt.execute();
+			connect.closeConnection();
+ 			
+		}catch(SQLException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean Modifier() {
 		try {
-			String updateQuery="update doctor set nom = ?, prenom = ? where username='doctor'";
+			String updateQuery="update doctor set nom = ?, prenom = ?, userKey = ? where username = ?";
 		
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(updateQuery);
 			
-			preparedStmt.setString(1, firstName);
-			preparedStmt.setString(2, lastName);
-			
+			preparedStmt.setString(1, nomDocteur);
+			preparedStmt.setString(2, prenomDocteur);
+			preparedStmt.setString(3, userKey);
+			preparedStmt.setString(4, "doctor");
 			preparedStmt.execute();
 			connect.closeConnection();
 		}
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
+			return false;
 		}
-		 
+	
+		return true;
 	}
-		
-//}
-	
-    //its just a test :
 
-public static void main(String[] args) {
-	CompteSecretaire s = new CompteSecretaire("Admin"); 
-	CompteDocteur d = new CompteDocteur("DocTest", "test", "admin");
+	@Override
+	public boolean Supprimer() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+				
+}
 		
-	d.modifierCompte("1name", "2name");
-	System.out.println(s.userKey); 
-	System.out.println(d.userKey); 
-}
-}
-	
