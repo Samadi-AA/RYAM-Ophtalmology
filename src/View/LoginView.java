@@ -9,6 +9,7 @@ package view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
@@ -18,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
 import control.DatabaseConnection;
 
 public class LoginView implements ActionListener {
@@ -29,24 +29,34 @@ public class LoginView implements ActionListener {
 	private static JTextField passwordText;
 	private static JButton loginButton;
 	private static JButton resetButton;
-	private static JFrame fr;
-	private static JFrame fr1;
-	private static JFrame fr2;
+	private static JFrame loginFrame;
+	public static JFrame fr1;
+	public static JFrame fr2;
 	private static JLabel erreurMsg;
 	
-	private static DatabaseConnection connect = new DatabaseConnection();
+	static LogoPanel logo = new LogoPanel();
+	
+	private static DatabaseConnection connect;
 
 	public static void main(String[] args) {
-
-		fr = new JFrame();
-		JPanel p = new JPanel();
-
-		fr.setSize(400, 350);
-		fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		fr.add(p);
-
-		// doctor page ************************************ just pour tester
-		fr1 = new JFrame();
+		
+		loginFrame = new JFrame();
+		JPanel loginContainerPanel = new JPanel();
+		
+		logo.setLayout(null);
+		
+		//loginFrame.getContentPane().setBackground( Color.BLACK );
+		loginFrame.setSize(400, 250);
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//loginFrame.setResizable(false);
+		
+		loginFrame.add(loginContainerPanel);
+		loginFrame.add(logo);
+		
+/***********************************************************************************************/
+		// On doit gerer ce 2 pages au partie de gestion des views
+		// doctor page ************************************ just pour tester         1a252c
+		fr1 = new JFrame("Doctor");
 		JPanel p1 = new JPanel();
 		fr1.setSize(400, 350);
 		fr1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,7 +64,8 @@ public class LoginView implements ActionListener {
 		docText.setBounds(200, 200, 100, 100);
 		docText.setSize(100, 100);
 		p1.add(docText);
-		fr1.add(p1); 												// On doit gerer ce 2 pages au partie de gestion des views
+		fr1.add(p1);
+		fr1.setExtendedState(fr1.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
 		// sectretaire page ******************************* just pour tester
 		fr2 = new JFrame();
@@ -66,102 +77,101 @@ public class LoginView implements ActionListener {
 		secText.setSize(100, 100);
 		p2.add(secText);
 		fr2.add(p2);
+		fr2.setExtendedState(fr2.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
-		///////////////////////////////////////////////////////
+/***********************************************************************************************/		
 		
-		
-		p.setLayout(null);
+		loginContainerPanel.setLayout(null);
+		loginContainerPanel.setBounds(100, 100, 400, 200);
+		//loginContainerPanel.setBackground(Color.TRANSPARENT);
 
 		userLabel = new JLabel("User: ");
 		userLabel.setBounds(20, 30, 200, 25);
-		p.add(userLabel);
+		loginContainerPanel.add(userLabel);
 
 		userText = new JComboBox<String>();
 		userText.setBounds(120, 30, 210, 25);
-		p.add(userText);
 		userText.addItem("Doctor");
 		userText.addItem("Secretaire");
-		userText.setSelectedItem(null);
+		userText.setSelectedItem("Doctor");
+		loginContainerPanel.add(userText);
 
 		passwordLabel = new JLabel("Password: ");
 		passwordLabel.setBounds(20, 60, 200, 25);
-		p.add(passwordLabel);
+		loginContainerPanel.add(passwordLabel);
 
 		passwordText = new JPasswordField(20);
 		passwordText.setBounds(120, 60, 211, 25);
-		p.add(passwordText);
+		loginContainerPanel.add(passwordText);
 
 		loginButton = new JButton("Login");
 		loginButton.setBounds(120, 90, 100, 25);
 		loginButton.setToolTipText("Se connecter");
-		p.add(loginButton);
-
 		loginButton.addActionListener(new LoginView());
+		loginContainerPanel.add(loginButton);
 
 		resetButton = new JButton("Reset");
 		resetButton.setBounds(230, 90, 100, 25);
-		p.add(resetButton);
-
 		resetButton.addActionListener(new LoginView());
+		loginContainerPanel.add(resetButton);
 
 		erreurMsg = new JLabel();
 		erreurMsg.setBounds(20, 130, 200, 25);
-		p.add(erreurMsg);
+		loginContainerPanel.add(erreurMsg);
 
-		fr.setVisible(true);
+		loginFrame.setVisible(true);
 		
 	}
 
-	public String getMotDePss(String user){
+	public static String selectUserKey(String user){
 		
-		// J'ai rempli les tables avec les valeurs suivant juste pour tester :
-		//insert into doctor (userKey, nom, prenom) values ("admin", "DocTest", "DocTest");
-		//insert into secretaire (userKey) values ("admin");
-		
-		String Mdp = "Null";
+		String userKey = null;
 		
 		try {
-				
-			String selectQuery="select userKey from ? where username=?";
+			connect = new DatabaseConnection();
+			
+			String selectQuery = "select userKey from " + user + " where username = '" + user + "'";
 		
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
 			
-			preparedStmt.setString(1, user); 
-			preparedStmt.setString(2, user); 
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
 			
-			preparedStmt.execute();
-			
-			Mdp = preparedStmt.getResultSet().getString("userKey");
-			
+			while (res.next()) userKey = res.getString("userKey");
+		
 			connect.closeConnection();
 		}
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
 		}
 		
-		return Mdp;
+		return userKey;
 	}
 
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		String username = "";
 		String password = passwordText.getText();
 		
+		if(userText.getSelectedItem() != null) username = userText.getSelectedItem().toString().trim();
+		
 		if (e.getSource() == loginButton) {
-			if (userText.getSelectedItem() == "Doctor" && password.equals(getMotDePss("doctor"))) {
-				fr.setVisible(false);
+			if (username.equalsIgnoreCase("doctor") && password.equals(selectUserKey(username))) {
+				loginFrame.setVisible(false);
 				fr1.setVisible(true);
-			} else if (userText.getSelectedItem() == "Secretaire" && password.equals(getMotDePss("secretaire"))) {
-				fr.setVisible(false);
+			} 
+			else if (username.equalsIgnoreCase("secretaire") && password.equals(selectUserKey(username))) {
+				loginFrame.setVisible(false);
 				fr2.setVisible(true);
-			} else if(userText.getSelectedItem() == null)
-				erreurMsg.setText("User not selected !");
-			else
-				erreurMsg.setText("Password not correct !!");
-		} else if (e.getSource() == resetButton) {
-			passwordText.setText(null);
-			userText.setSelectedItem(null);
-			erreurMsg.setText("");
+			} 
+			else if(username.isEmpty()) erreurMsg.setText("No user selected !!");
+			else erreurMsg.setText("Incorrect password !!");
+		} 
+		else if (e.getSource() == resetButton) {
+			if(!username.isEmpty() || !password.isEmpty()) {
+				passwordText.setText(null);
+				userText.setSelectedItem(null);
+				erreurMsg.setText("");
+			}
 		}
 	}
 

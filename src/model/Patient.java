@@ -104,13 +104,13 @@ public class Patient implements CRUD{
 			
 			ResultSet res = preparedStmt.executeQuery(selectQuery);
 			
-			while (res.next()) {
-				numPatient = res.getLong("num_patient");
-			}			
-		} catch (Exception e) {
+			while (res.next()) numPatient = res.getLong("num_patient");
+			
+			connect.closeConnection();
+		}
+		catch (Exception e) {
 			System.out.println("fuck you "+e.getMessage());
 		}
-		
 	}
 	
 	@Override
