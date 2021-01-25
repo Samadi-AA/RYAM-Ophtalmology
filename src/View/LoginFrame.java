@@ -52,7 +52,6 @@ public class LoginFrame extends JFrame {
 		setUndecorated(true);
 		setResizable(false);
 		setLocationRelativeTo(null);
-		setTitle("Se Connecter");
 		
 		// set the container panel
 		container = new JPanel();
@@ -109,8 +108,8 @@ public class LoginFrame extends JFrame {
 		
 		// set the error message label
 		lblErrorMsg = new JLabel("");
-		lblErrorMsg.setBounds(90, 171, 225, 16);
-		lblErrorMsg.setForeground(Color.red);
+		lblErrorMsg.setBounds(90, 216, 225, 16);
+		lblErrorMsg.setForeground(mainWhite);
 		lblErrorMsg.setFont(new Font("monospace", 0, 11));
 		container.add(lblErrorMsg);
 		
@@ -146,13 +145,13 @@ public class LoginFrame extends JFrame {
 				
 				if (username.equalsIgnoreCase("doctor") && password.equals(selectUserKey(username))) {
 					LoginFrame.this.dispose(); //close the login window
-					//HomeDoctorFrame.launchHomeWindow(); launch the doctor's home window
+					DoctorHomeFrame.launch(); //launch the doctor's home window
 				} 
 				else if (username.equalsIgnoreCase("secretaire") && password.equals(selectUserKey(username))) {
 					LoginFrame.this.dispose();
-					//HomeSecretaireFrame.launchHomeWindow(); launch the secretaire's home window
+					SecretaireHomeFrame.launch(); // launch the secretaire's home window
 				} 
-				else lblErrorMsg.setText("Incorrect Password...!?");
+				else lblErrorMsg.setText("Mot de passe incorrect...!?");
 			}
 		});
 		
