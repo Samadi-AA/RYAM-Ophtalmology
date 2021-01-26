@@ -3,14 +3,14 @@ create database CabinetOphta;
 use CabinetOphta;
 
 CREATE TABLE doctor (
-    username VARCHAR(15) PRIMARY KEY default("doctor"),
+    username VARCHAR(15) PRIMARY KEY default "doctor",
     userkey VARCHAR(30),
     nom VARCHAR(30) NOT NULL,
     prenom VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE secretaire (
-    username VARCHAR(15) PRIMARY KEY default("secretaire"),
+    username VARCHAR(15) PRIMARY KEY default "secretaire",
     userkey VARCHAR(30) NOT NULL
 );
 
@@ -36,13 +36,22 @@ CREATE TABLE patient (
 
 );
 
+CREATE TABLE patient_courant (
+    id int DEFAULT 0,
+    num_pat_courant BIGINT DEFAULT NULL,
+
+    CONSTRAINT patient_patient_courant_fk
+        FOREIGN KEY(num_pat_courant) 
+        REFERENCES patient(num_patient)
+);
+
 CREATE TABLE RDV (
-    num_rdv BIGINT PRIMARY KEY,
+    num_rdv BIGINT PRIMARY KEY AUTO_INCREMENT,
     nom_pat VARCHAR(60),
     num_pat BIGINT,
-    date_rdv DATE,
-    heur_rdv TIMESTAMP,
-    date_resevation DATE,
+    CIN VARCHAR(10),
+    datetime_rdv TIMESTAMP NOT NULL,
+    date_resevation DATE DEFAULT CURRENT_DATE,
     CONSTRAINT rdv_patient_fk
         FOREIGN KEY(num_pat) 
         REFERENCES patient(num_patient)

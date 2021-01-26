@@ -1,112 +1,220 @@
 package model;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import control.DatabaseConnection;
 
-public class RDV {
+public class RDV implements CRUD{
 	
 /*--- Properties ---*/
-	private int numRDV;
-	private Date dateRDV;
-	private Date heureRDV;
-	private DatabaseConnection Connect = new DatabaseConnection();
+	private String nomPatient;
+	private String CIN;
+	private long numPatient, numRDV;
+	private Timestamp datetimeRDV;
+	private Date dateResevation;
+	private DatabaseConnection connect;
 	
 /*--- Constructor ---*/
-	public RDV(int numRDV,Date dateRDV,Date heureRDV) {
-		this.numRDV=numRDV;
-		this.dateRDV=dateRDV;
-		this.heureRDV=heureRDV;
+	public RDV(long numRDV) {
+		this.numRDV = numRDV;
+	}
+	public RDV() {
+		// empty constructor
+	}
+	public RDV(String nomPatient, String CIN) {
+		this.nomPatient = nomPatient;
+		this.CIN = CIN;
 	}
 
 /*--- Getters and Setters ---*/
-
-	public int getNumRDV() {
+	public String getNomPatient() {
+		return nomPatient;
+	}
+	public void setNomPatient(String nomPatient) {
+		this.nomPatient = nomPatient;
+	}
+	public String getCIN() {
+		return CIN;
+	}
+	public void setCIN(String cIN) {
+		CIN = cIN;
+	}
+	public long getNumPatient() {
+		return numPatient;
+	}
+	public void setNumPatient(long numPatient) {
+		this.numPatient = numPatient;
+	}
+	public long getNumRDV() {
 		return numRDV;
 	}
-	public void setNumRDV(int numRDV) {
-		this.numRDV = numRDV;
+	public Timestamp getDatetimeRDV() {
+		return datetimeRDV;
 	}
-	public Date getDateRDV() {
-		return dateRDV;
+	public void setDatetimeRDV(Timestamp datetimeRDV) {
+		this.datetimeRDV = datetimeRDV;
 	}
-	public void setDateRDV(Date dateRDV) {
-		this.dateRDV = dateRDV;
-	}
-	public Date getHeureRDV() {
-		return heureRDV;
-	}
-	public void setHeureRDV(Date heureRDV) {
-		this.heureRDV = heureRDV;
+	public Date getDateResevation() {
+		return dateResevation;
 	}
 
-	/*--- methods ---*/
-		
-	public void ajouteRDV() {
+/*--- Methods ---*/
+	
+	public void selectNumPatient() {
 		try {
-			String insertQuery = 
-					"insert into rdv(num_rdv,date_rdv,heur_rdv) values (?,?,?)";
+			connect = new DatabaseConnection();
 			
-			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(insertQuery);
+			String selectQuery = "select num_patient from patient where cin = '"+CIN+"'";
 			
-			preparedStmt.setInt(1,numRDV);
-			preparedStmt.setDate(2,dateRDV);
-			preparedStmt.setDate(3,heureRDV);
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
+			
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+			
+			while (res.next()) numPatient = res.getLong("num_patient");
+			
+			connect.closeConnection();
+		}
+		catch (Exception e) {
+			System.out.println("fuck you "+e.getMessage());
+		}
+	}
+	
+	public Timestamp selectLatestRDVDate() {
+		Timestamp latestRDV = null;		
+		try {
+			connect = new DatabaseConnection();
+			
+			String selectQuery = "SELECT max(datetime_rdv) maxDatetime FROM rdv";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
+			
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+			
+			while (res.next()) latestRDV = Timestamp.valueOf(res.getString("maxDatetime"));
+			
+			connect.closeConnection();
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		
+		return latestRDV;
+	}
+	
+	public void autoRDV() {
+		Timestamp nextRDV = selectLatestRDVDate();
+		
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		String lastRDVTime = format.format(nextRDV);
+		String endWorkTime = format.format(Timestamp.valueOf("1000-10-10 17:30:00.0"));
+				
+		if (lastRDVTime.contains(endWorkTime)) {
+			long noWorkTime = ((14*60)+30)*60*1000;
+			nextRDV.setTime(nextRDV.getTime() + noWorkTime);
+		}
+		else {
+			long working = 30*60*1000;
+			nextRDV.setTime(nextRDV.getTime() + working);
+		}
+		
+		datetimeRDV = nextRDV;
+	}
+	
+	public boolean confirmerVisite() {
+		try {
+			connect = new DatabaseConnection();
+			String updateQuery = "UPDATE patient_courant SET num_pat_courant = "+ numPatient +" WHERE id = 0";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(updateQuery);
 			
 			preparedStmt.execute();
-			Connect.closeConnection();
+			connect.closeConnection();
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean Ajouter() {
+		if(CIN.isEmpty()) {
+			Patient pat = new Patient();
+			pat.Ajouter();
+			numPatient = pat.getNumPatient();
+		}
+		else selectNumPatient();
+		try {
+			connect = new DatabaseConnection();
+			String insertQuery = 
+					"insert into rdv(nom_pat, num_pat, cin, datetime_rdv) "
+					+ "values (?, ?, ?, ?)";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(insertQuery);
+			
+			preparedStmt.setString(1, nomPatient);
+			preparedStmt.setLong(2,numPatient);
+			preparedStmt.setString(3, CIN);
+			preparedStmt.setTimestamp(4, datetimeRDV);
+						
+			preparedStmt.execute();
+			connect.closeConnection();
 				
 		}
-			catch(SQLException e) {
-					System.out.println(e.getMessage());
-			}
-	}
-	
-	// Annul RDV
-	
-	public void annuleRDV() {
-		try {
-		String anuuleQuery= "delete from rdv where num_rdv=?";
-		
-		
-			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(anuuleQuery);
-			
-			preparedStmt.setInt(1,numRDV);
-			preparedStmt.execute();
-			Connect.closeConnection();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
+		catch(SQLException e) {
+			System.out.println(e.getMessage());
+			return false;
 		}
+		return true;
 	}
-	
-	
-	//Modifier RDV
-	
-	public void modifieRDV() {
+
+	@Override
+	public boolean Modifier() {
 		try {
+			connect = new DatabaseConnection();
 			String updateQuery =
 					"UPDATE rdv SET "
-					+ "num_rdv= ?,"
-					+ "date_rdv= ?,"
-					+ "heure_rdv= ?"
-					+ "where num_rdv=?";
+					+ "datetime_rdv = ?"
+					+ "where num_rdv =?";
 			
-			PreparedStatement preparedStmt = Connect.getConnection().prepareStatement(updateQuery);
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(updateQuery);
 			
-			preparedStmt.setInt(1,numRDV);
-			preparedStmt.setDate(2, dateRDV);
-			preparedStmt.setDate(3, heureRDV);
-			
-			preparedStmt.setInt(4,numRDV);
+			preparedStmt.setTimestamp(1, datetimeRDV);
+			preparedStmt.setLong(2,numRDV);
 			
 			preparedStmt.execute();
-			Connect.closeConnection();
+			connect.closeConnection();
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			return false;
 		}
+		return true;
+	}
+
+	@Override
+	public boolean Supprimer() {
+		try {
+			connect = new DatabaseConnection();
+			String deleteQuery= "delete from rdv where num_rdv = " + numRDV;
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(deleteQuery);
+			
+			preparedStmt.execute();
+			
+			connect.closeConnection();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

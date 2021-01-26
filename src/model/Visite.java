@@ -8,9 +8,8 @@ import control.DatabaseConnection;
 
 	
 	public class Visite {
-		int num_visite;
+		long numVisite, numDossier;
 	
-
 		Date date_visite;
 		String prescription;
 		String symptome;
@@ -18,9 +17,6 @@ import control.DatabaseConnection;
 		String remede;
 		long prix_pay;
 		private DatabaseConnection connect;
-		
-		
-		
 
 		
 	/*--- Constructor ---*/
@@ -56,12 +52,12 @@ import control.DatabaseConnection;
 			
 			
 			
-			public int getNum_visite() {
-				return num_visite;
+			public long getNum_visite() {
+				return numVisite;
 			}
 
-			public void setNum_visite(int num_visite) {
-				this.num_visite = num_visite;
+			public void setNum_visite(long num_visite) {
+				this.numVisite = num_visite;
 			}
 			
 			
@@ -249,7 +245,7 @@ import control.DatabaseConnection;
 		    		
 					PreparedStatement statementdelete=connect.getConnection().prepareStatement(supprimer);
 					
-					statementdelete.setInt(1,num_visite);
+					statementdelete.setLong(1,numVisite);
 					
 					
 					statementdelete.execute();

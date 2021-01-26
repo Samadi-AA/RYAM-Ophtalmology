@@ -20,18 +20,16 @@ public class Patient implements CRUD{
 
 /*--- Constructor ---*/
 	public Patient() {
-		
+		// empty constructor
 	}
 	
-	public Patient(String nom, String prenom, String CIN, String sexe, String adresse, String telephone) {
-		super();
-//		Dossier dossier = new Dossier();
-//		numDossier = (int) dossier.getNumDossier();
+	public Patient(String nom, String prenom, String CIN, String sexe, String adresse, Date dateNaissance, String telephone) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.CIN = CIN;
 		this.sexe = sexe;
 		this.adresse = adresse;
+		this.dateNaissance = dateNaissance;
 		this.telephone = telephone;
 	}
 	
@@ -98,7 +96,7 @@ public class Patient implements CRUD{
 		try {
 			connect = new DatabaseConnection();
 			
-			String selectQuery = "select num_patient from patient where cin = '"+CIN+"'";
+			String selectQuery = "select num_patient from patient where num_dossier = '" + numDossier + "'";
 			
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
 			
