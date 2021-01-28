@@ -21,17 +21,6 @@ public class secretaireView {
 		container.setLayout(new GridBagLayout());
 
 		
-		
-		menu m = new menu();
-		GridBagConstraints menuConstraint = new GridBagConstraints();
-		menuConstraint.gridx=0;
-		menuConstraint.gridy=0;
-		menuConstraint.gridwidth=3;
-		menuConstraint.weightx=1;
-		menuConstraint.fill = GridBagConstraints.BOTH;
-		menuConstraint.insets = new Insets(5,5,5,5);
-		container.add(m.getView(),menuConstraint);
-		
 		patientRDV p = new patientRDV();
 		GridBagConstraints patientRdvConstraint = new GridBagConstraints();
 		patientRdvConstraint.gridx=0;

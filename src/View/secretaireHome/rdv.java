@@ -1,11 +1,15 @@
 package view.secretaireHome;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,13 +18,23 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import model.RDV;
+
+
 public class rdv implements ActionListener{
 	JFrame frame;
 	JPanel rdvPanel,container;
-	JLabel nomText,prenomText,cinText,dateText;
-	JButton login,reset,manuale,automatique;
-	JTextField nom,prenome,cin;
-	CalenderRdv date;
+	JLabel lblFullName,prenomText,lblCIN,lblDate;
+	JButton login,btnReset,btnMan,btnAuto;
+	JTextField fullNameField,prenome,cinField;
+	DateTimePicker datePicker;
+	String modeRDV = "man";
+	
+	/*-- Design --*/
+	private final Color mainDark = Color.decode("#1a252c");
+	private final Color mainWhite = Color.decode("#eeeeee");
+	private final Color mainGreen = Color.decode("#39b672");
+	private final Font mainFont = new Font("Candara", Font.BOLD, 20);
 	
     public rdv() {
     	
@@ -33,34 +47,43 @@ public class rdv implements ActionListener{
     	        
     	       
     			// the manual button and it's position in the gridGapLayout & add it to the RDV panel
-    		        manuale = new JButton("manuale");
-    		        GridBagConstraints manualConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
-    		        manualConstrains.gridx =0;
-    		        manualConstrains.gridy = 0;
-    		        manualConstrains.gridwidth=2;
-    		        manualConstrains.weightx=0.5;
-    		        manualConstrains.fill = GridBagConstraints.BOTH;
-    		        manualConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(manuale,manualConstrains);
-    		        manuale.setBackground(Color.blue);
-    		        manuale.addActionListener(this);	// add action listener to the manual button
+    		        btnMan = new JButton("Manuel");
+    		        GridBagConstraints btnManConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
+    		        btnManConstrains.gridx =0;
+    		        btnManConstrains.gridy = 0;
+    		        btnManConstrains.gridwidth=2;
+    		        btnManConstrains.weightx=0.5;
+    		        btnManConstrains.fill = GridBagConstraints.BOTH;
+    		        btnManConstrains.insets = new Insets(0,0,0,0);		// set insets between the RDV panel elements (margin)
+    		        rdvPanel.add(btnMan,btnManConstrains);
+    		        btnMan.setBackground(mainGreen);
+    		        btnMan.setForeground(mainDark);
+    		        btnMan.setFont(mainFont);
+    		        btnMan.setBorder(null);
+    		        btnMan.setFocusPainted(false);
+    		        
+    		        btnMan.addActionListener(this);	// add action listener to the manual button
     	        
     	        // the automatic button and it's position in the gridGapLayout & add it to the RDV panel
-    		        automatique = new JButton("automatique");
-    		        GridBagConstraints automaticConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
-    		        automaticConstrains.gridx =2;
-    		        automaticConstrains.gridy = 0;
-    		        automaticConstrains.gridwidth=2;
-    		        automaticConstrains.weightx=0.5;
-    		        automaticConstrains.fill = GridBagConstraints.BOTH;
-    		        automaticConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(automatique,automaticConstrains);
+    		        btnAuto = new JButton("Automatique");
+    		        GridBagConstraints btnAutoConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
+    		        btnAutoConstrains.gridx =2;
+    		        btnAutoConstrains.gridy = 0;
+    		        btnAutoConstrains.gridwidth=2;
+    		        btnAutoConstrains.weightx=0.5;
+    		        btnAutoConstrains.fill = GridBagConstraints.BOTH;
+    		        btnAutoConstrains.insets = new Insets(0,0,0,0);		// set insets between the RDV panel elements (margin)
+    		        rdvPanel.add(btnAuto,btnAutoConstrains);
+    		        btnAuto.setBackground(mainWhite);
+    		        btnAuto.setForeground(mainDark);
+    		        btnAuto.setFont(mainFont);
+    		        btnAuto.setBorder(new LineBorder(mainGreen, 1));
+    		        btnAuto.setFocusPainted(false);
     	        
-    	        
-    		        automatique.addActionListener(this);	// add action listener to the automatic button
+    		        btnAuto.addActionListener(this);	// add action listener to the automatic button
     	        
     	        // the Name label and it's position in the gridGapLayout & add it to the RDV panel
-    		        nomText = new JLabel("Nom");
+    		        lblFullName = new JLabel("Nom");
     		        GridBagConstraints nomTextConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        nomTextConstrains.gridx =0;
     		        nomTextConstrains.gridy = 1;
@@ -68,10 +91,10 @@ public class rdv implements ActionListener{
     		        nomTextConstrains.weightx=0.25;
     		        nomTextConstrains.fill = GridBagConstraints.BOTH;
     		        nomTextConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(nomText,nomTextConstrains);
+    		        rdvPanel.add(lblFullName,nomTextConstrains);
     	        
     	        // the Name text Field and it's position in the gridGapLayout & add it to the RDV panel
-    		        nom = new JTextField();
+    		        fullNameField = new JTextField();
     		        GridBagConstraints nomConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        nomConstrains.gridx = 1;
     		        nomConstrains.gridy = 1;
@@ -79,32 +102,10 @@ public class rdv implements ActionListener{
     		        nomConstrains.weightx=0.75;
     		        nomConstrains.fill = GridBagConstraints.BOTH;
     		        nomConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(nom,nomConstrains);
-    	        
-    	        // the last Name label and it's position in the gridGapLayout & add it to the RDV panel
-    		        prenomText = new JLabel("Prenom");
-    		        GridBagConstraints prenomTextConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
-    		        prenomTextConstrains.gridx = 0;
-    		        prenomTextConstrains.gridy = 2;
-    		        prenomTextConstrains.weightx=0.25;
-    		        prenomTextConstrains.gridwidth=1;
-    		        prenomTextConstrains.fill = GridBagConstraints.BOTH;
-    		        prenomTextConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(prenomText,prenomTextConstrains);
-    	        
-    	        // the last name text Field and it's position in the gridGapLayout & add it to the RDV panel
-    		        prenome = new JTextField();
-    		        GridBagConstraints prenomConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
-    		        prenomConstrains.gridx = 1;
-    		        prenomConstrains.gridy = 2;
-    		        prenomConstrains.gridwidth=3;
-    		        prenomConstrains.weightx=0.75;
-    		        prenomConstrains.fill = GridBagConstraints.BOTH;
-    		        prenomConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(prenome,prenomConstrains);
-    	        
+    		        rdvPanel.add(fullNameField,nomConstrains);
+    	            	        
     	        // the CIN label and it's position in the gridGapLayout & add it to the RDV panel
-    		        cinText = new JLabel("CIN");
+    		        lblCIN = new JLabel("CIN");
     		        GridBagConstraints cinTextConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        cinTextConstrains.gridx = 0;
     		        cinTextConstrains.gridy = 3;
@@ -112,10 +113,10 @@ public class rdv implements ActionListener{
     		        cinTextConstrains.weightx=0.25;
     		        cinTextConstrains.fill = GridBagConstraints.BOTH;
     		        cinTextConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(cinText,cinTextConstrains);
+    		        rdvPanel.add(lblCIN,cinTextConstrains);
     		        
     	        // the CIN text Field and it's position in the gridGapLayout & add it to the RDV panel
-    		        cin = new JTextField();
+    		        cinField = new JTextField();
     		        GridBagConstraints cinConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        cinConstrains.gridx = 1;
     		        cinConstrains.gridy = 3;
@@ -123,10 +124,10 @@ public class rdv implements ActionListener{
     		        cinConstrains.weightx=0.75;
     		        cinConstrains.fill = GridBagConstraints.BOTH;
     		        cinConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(cin,cinConstrains);
+    		        rdvPanel.add(cinField,cinConstrains);
     	        
     	        // the RDV Date label and it's position in the gridGapLayout & add it to the RDV panel
-    		        dateText = new JLabel("Date");
+    		        lblDate = new JLabel("Date");
     		        GridBagConstraints dateTextConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        dateTextConstrains.gridx = 0;
     		        dateTextConstrains.gridy = 4;
@@ -135,10 +136,14 @@ public class rdv implements ActionListener{
     		        dateTextConstrains.fill = GridBagConstraints.BOTH;
     		        dateTextConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
 
-    		        rdvPanel.add(dateText,dateTextConstrains);
+    		        rdvPanel.add(lblDate,dateTextConstrains);
     	        
     	        // the RDV date text Field and it's position in the gridGapLayout & add it to the RDV panel
-    		        date = new CalenderRdv();
+    		        Date d = new Date();
+    		        datePicker = new DateTimePicker();
+    		        datePicker.setFormats( DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.MEDIUM ) );
+    		        datePicker.setTimeFormat( DateFormat.getTimeInstance( DateFormat.MEDIUM ) );
+    		        datePicker.setDate(d);
     		        GridBagConstraints dateConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        dateConstrains.gridx = 1;
     		        dateConstrains.gridy = 4;
@@ -147,7 +152,7 @@ public class rdv implements ActionListener{
     		        dateConstrains.fill = GridBagConstraints.BOTH;
     		        dateConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
     		
-    		        rdvPanel.add(date.getView(),dateConstrains);
+    		        rdvPanel.add(datePicker,dateConstrains);
     		        
     	        // the Login button and it's position in the gridGapLayout & add it to the RDV panel
     		        login = new JButton("creer");
@@ -163,7 +168,7 @@ public class rdv implements ActionListener{
     		        login.addActionListener(this);	// add action listener to the login button
     	      
     	        // the reset button and it's position in the gridGapLayout & add it to the RDV panel
-    		        reset = new JButton("Rest");
+    		        btnReset = new JButton("Rest");
     		        GridBagConstraints resetConstrains = new GridBagConstraints();			// declare a GridBagConstraints that's will control the element's position in the GridBagLayout 
     		        resetConstrains.gridx = 1;
     		        resetConstrains.gridy = 5;
@@ -171,9 +176,9 @@ public class rdv implements ActionListener{
     		        resetConstrains.weightx=0.25;
     		        resetConstrains.fill = GridBagConstraints.BOTH;
     		        resetConstrains.insets = new Insets(5,5,5,5);		// set insets between the RDV panel elements (margin)
-    		        rdvPanel.add(reset,resetConstrains);
+    		        rdvPanel.add(btnReset,resetConstrains);
     		        
-    		        reset.addActionListener(this);
+    		        btnReset.addActionListener(this);
     		        
     		        rdvPanel.setBorder(new LineBorder(Color.black));	
         return rdvPanel;
@@ -183,27 +188,41 @@ public class rdv implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == login) {		// if the login button clicked this will happen
-		
+			RDV rdv = new RDV();
+			rdv.setNomPatient(fullNameField.getText());
+			rdv.setCIN(cinField.getText());
+			if (modeRDV == "auto") rdv.autoRDV();
+			else {
+				Timestamp t = new Timestamp(datePicker.getDate().getTime());
+				rdv.setDatetimeRDV(t);
+			}
+			rdv.Ajouter();
+			
 		}
-		else if(e.getSource() == reset) {	// if the reset button clicked this will happen
+		else if(e.getSource() == btnReset) {	// if the reset button clicked this will happen
 			// set all the text field in the panel to empty string 
-			nom.setText("");
+			fullNameField.setText("");
 			prenome.setText("");
-			cin.setText("");
-			date.resetdate();
+			cinField.setText("");
+			datePicker.setDate(null);
 			//date.setText("");
 		}
-		else if(e.getSource() == manuale) {	// if the manual button clicked this will happen
-			manuale.setBackground(Color.blue);	//change manual color 
-	        automatique.setBackground(null);	//set the other button color as default
+		else if(e.getSource() == btnMan) {	// if the manual button clicked this will happen
+			modeRDV = "man";
+			btnMan.setBackground(mainGreen);	//change manual color 
+	        btnAuto.setBackground(mainWhite); //set the other button color as default
+	        btnAuto.setBorder(new LineBorder(mainGreen, 1));
+	        
 	        // display the RDV date text field and label again  
-	        date.enableDate();
+	        //datePicker.setDate(d);
 		}
-		else if(e.getSource() == automatique) {	// if the automatic button clicked this will happen
-			automatique.setBackground(Color.BLUE);	//change manual color 
-	        manuale.setBackground(null);	//set the other button color as default
+		else if(e.getSource() == btnAuto) {	// if the automatic button clicked this will happen
+			modeRDV = "auto";
+			btnAuto.setBackground(mainGreen);	//change manual color 
+	        btnMan.setBackground(mainWhite);	//set the other button color as default
+	        btnMan.setBorder(new LineBorder(mainGreen, 1));
 	        // remove the RDV date text label and text field 	
-	        date.disableDate();
+	        //date.disableDate();
 		}
 		
 

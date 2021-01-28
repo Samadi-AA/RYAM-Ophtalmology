@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
@@ -34,31 +35,30 @@ import view.LoginFrame;
 
 public class patientRDV {
 	
+	JTable tableRDV;
 	long selectedRDV;
-	Object[][]list= new Object[20][6];
+	Object[][]list;
 	/*-- Design --*/
 	private ImageIcon deleteImage = new ImageIcon(LoginFrame.class.getResource("/view/icons/delete.png"));
-	private ImageIcon editIcon = new ImageIcon(LoginFrame.class.getResource("/view/icons/edit.png"));
-	private ImageIcon confirmIcon = new ImageIcon(LoginFrame.class.getResource("/view/icons/valide.png"));
+	private ImageIcon editIcon = new ImageIcon(LoginFrame.class.getResource("/view/icons/editIcon.png"));
+	private ImageIcon confirmIcon = new ImageIcon(LoginFrame.class.getResource("/view/icons/confirmIcon.png"));
 	private final Color mainDark = Color.decode("#1a252c");
 	private final Color mainWhite = Color.decode("#eeeeee");
 	private final Color mainGreen = Color.decode("#39b672");
-	private final Font mainFont = new Font("Candara", Font.BOLD, 20);
+	private final Font mainFont = new Font("Monospaced", Font.BOLD, 16);
 	
 	
 	public patientRDV() {
 		
 	}
 	
-	public JScrollPane getView() {
-		JTable tableRDV;
-	        
+	public JScrollPane getView() { 
         initData();
         
-        String []head= {"NUM","CIN","NOM","PRENOM","DATE DE RDV","ACTIONS"};
+        String []head= {"Numero","CIN","Nom complete","Date de RDV","Actions"};
         
-        tableRDV = new JTable(list, head){
-			boolean tableBool[]= {false,false,false,false,false,true};
+        tableRDV = new JTable(list, head) {
+			boolean tableBool[]= {false,false,false,false,true};
 			@Override
 		    public boolean isCellEditable(int row, int column) {
 				return tableBool[column];
@@ -67,11 +67,19 @@ public class patientRDV {
 
 		
 	    tableRDV.setBackground(Color.decode("#eeeeee"));
-	    tableRDV.getColumnModel().getColumn(5).setCellRenderer(new MyRenderer());
-   		tableRDV.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JTextField()));
-   		TableColumn col5 = tableRDV.getColumnModel().getColumn(5);
+	    tableRDV.setForeground(mainDark);
+	    tableRDV.setFont(mainFont);
+	    tableRDV.getTableHeader().setOpaque(false);
+	    tableRDV.getTableHeader().setBackground(mainDark);
+	    tableRDV.getTableHeader().setForeground(mainWhite);
+	    tableRDV.getTableHeader().setFont(mainFont);
+	    //tableRDV.setBorder();
+	    
+	    tableRDV.getColumnModel().getColumn(4).setCellRenderer(new MyRenderer());
+   		tableRDV.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JTextField()));
+   		TableColumn col4 = tableRDV.getColumnModel().getColumn(4);
    		tableRDV.setRowHeight(45);
-   		col5.setPreferredWidth(100);
+   		col4.setPreferredWidth(100);
    		tableRDV.getColumnModel().getColumn(0).setPreferredWidth(1);
    		
    		JScrollPane scrollPane = new JScrollPane(tableRDV);
@@ -91,28 +99,41 @@ public class patientRDV {
 					+ "' AND '"+ tomorow.toString() +"'";
 			
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
-			
-			ResultSet res = preparedStmt.executeQuery(selectQuery);
 						
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+			
+			
+			String[] nums = new String[30], 
+					 cins = new String[30],
+					 noms = new String[30],
+					 dates = new String[30];
+			
 			int i = 0;
-
-	        while (res.next()) { 
-	        	list[i][0] = res.getString("num_rdv");
-	        	list[i][1] = res.getString("CIN");
-	        	list[i][2] = res.getString("nom_pat");
-	        	list[i][3] = res.getString("nom_pat");
-	        	list[i][4] = res.getString("datetime_rdv");
-	        	list[i][5] = "";
+				
+	        while (res.next()) {
+	        	nums[i] = res.getString("num_rdv");
+	        	cins[i] = res.getString("CIN");
+	        	noms[i] = res.getString("nom_pat");
+	        	dates[i] = res.getString("datetime_rdv");
 	        	i++;
 			}
-			
+	        
+	        list= new Object[i][5];
+	        
+	        for (int j = 0; j < i; j++) {
+	        	list[j][0] = nums[j];
+	        	list[j][1] = cins[j];
+	        	list[j][2] = noms[j];
+	        	list[j][3] = dates[j];
+	        	list[j][4] = "";
+			}
+	     						
 			connect.closeConnection();
 		}
 		catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 	}
-	
 	
 	class MyRenderer implements TableCellRenderer {
 		JPanel btnsPanel;
@@ -125,7 +146,6 @@ public class patientRDV {
 		public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean Focus, int row, int column) {
 			if (isSelected) {
 				selectedRDV = (long) Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
-				System.out.println(selectedRDV);
 			}
 			return btnsPanel;
 		}
@@ -143,34 +163,37 @@ public class patientRDV {
 			btnConfirm = new JButton();
 			btnConfirm.setSize(new Dimension(26,26));
 			btnConfirm.setBackground(mainWhite);
-			btnConfirm.setBorder(new EmptyBorder(5, 5, 0, 5));
+			btnConfirm.setBorder(new EmptyBorder(2, 0, 0, 0));
 			btnConfirm.setIcon(confirmIcon);
 			btnConfirm.setFocusPainted(false);
+			btnConfirm.setToolTipText("Confirmer la visite");
 				
 			btnEdit = new JButton();
 			btnEdit.setSize(new Dimension(26,26));
 			btnEdit.setBackground(mainWhite);
-			btnEdit.setBorder(new EmptyBorder(5, 5, 0, 5));
+			btnEdit.setBorder(new EmptyBorder(3, 20, 0, 20));
 			btnEdit.setIcon(editIcon);
 			btnEdit.setFocusPainted(false);
+			btnEdit.setToolTipText("Modifer le rondez-vous");
 				       
 			btnDelete = new JButton();
 			btnDelete.setSize(new Dimension(26,26));
 			btnDelete.setBackground(mainWhite);
-			btnDelete.setBorder(new EmptyBorder(5, 5, 0, 5));
+			btnDelete.setBorder(new EmptyBorder(2, 0, 0, 0));
 			btnDelete.setIcon(deleteImage);
 			btnDelete.setFocusPainted(false);
+			btnDelete.setToolTipText("Annuler le rondez-vous");
 			 
 			btnsPanel.add(btnConfirm);
 			btnsPanel.add(btnEdit);
 			btnsPanel.add(btnDelete);
 			btnsPanel.setSize(200, 50);
+			btnsPanel.setToolTipText("Double click pour accees au actions");
 			
 			btnConfirm.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					super.mouseClicked(e);
-					System.out.println("Confirme");
 					RDV rdv = new RDV(selectedRDV);
 					rdv.setNumPatient(1);
 					rdv.confirmerVisite();
@@ -182,7 +205,6 @@ public class patientRDV {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					super.mouseClicked(e);
-					System.out.println("Edit");
 				}
 			});
 			
@@ -192,7 +214,7 @@ public class patientRDV {
 					super.mouseClicked(e);
 					RDV rdv = new RDV(selectedRDV);
 					rdv.Supprimer();	
-					initData();
+					getView();
 				}
 			});
 			
@@ -224,5 +246,4 @@ public class patientRDV {
 	}
 		
 }
-
 
