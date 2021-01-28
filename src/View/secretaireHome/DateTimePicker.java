@@ -25,7 +25,7 @@ public class DateTimePicker extends JXDatePicker {
         this();
         setDate(d);
     }
-
+    
     public void commitEdit() throws ParseException {
         commitTime();
         super.commitEdit();
@@ -106,19 +106,13 @@ public class DateTimePicker extends JXDatePicker {
         updateTextFieldFormat();
     }
 
-    public static void main(String[] args) {
-        Date date = new Date();
-        JFrame frame = new JFrame();
-        frame.setTitle("Date Time Picker");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        DateTimePicker dateTimePicker = new DateTimePicker();
-        dateTimePicker.setFormats( DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.MEDIUM ) );
-        dateTimePicker.setTimeFormat( DateFormat.getTimeInstance( DateFormat.MEDIUM ) );
-
-        dateTimePicker.setDate(date);
-
-        frame.getContentPane().add(dateTimePicker);
-        frame.pack();
-        frame.setVisible(true);
-    }
+    public void enable() {
+    	setEditable(true);
+    	timeSpinner.setEnabled(true);
+	}
+    public void disable() {
+    	setEditable(false);
+    	timeSpinner.setEnabled(false);
+	}
+    
 }

@@ -145,7 +145,7 @@ public class LoginFrame extends JFrame {
 				
 				if (username.equalsIgnoreCase("doctor") && password.equals(selectUserKey(username))) {
 					LoginFrame.this.dispose(); //close the login window
-					DoctorHome.launch(); //launch the doctor's home window
+					DoctorHomeFrame.launch(); //launch the doctor's home window
 				} 
 				else if (username.equalsIgnoreCase("secretaire") && password.equals(selectUserKey(username))) {
 					LoginFrame.this.dispose();

@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import control.DatabaseConnection;
@@ -16,6 +17,7 @@ public class Dossier implements CRUD{
 	
 /*--- Constructor ---*/
 	public Dossier() {
+		initData();
 		numIncrement++;
 		numDossier = numIncrement;
 		dateCreationDossier = new Date(System.currentTimeMillis());
@@ -38,6 +40,27 @@ public class Dossier implements CRUD{
 
 /*--- Methods ---*/	
 
+	public void initData() {
+		// get the next numDossier
+		try {
+			connect = new DatabaseConnection();
+			
+			String selectQuery = "SELECT max(num_dossier) as num FROM dossier";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
+			
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+			
+			while (res.next()) numIncrement = res.getLong("num");
+			
+			connect.closeConnection();
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
 	@Override
 	public boolean Ajouter() {
 		try {
