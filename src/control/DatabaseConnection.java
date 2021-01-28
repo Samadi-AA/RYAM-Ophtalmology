@@ -14,9 +14,9 @@ public class DatabaseConnection {
 
 	public DatabaseConnection() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-	        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1/cabinetophta?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","");
-
+			Class.forName("com.mysql.jdbc.Driver");
+	        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cabinetOphta","root","");
+	        // "jdbc:mysql://localhost:3306/db_test","root",""
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
