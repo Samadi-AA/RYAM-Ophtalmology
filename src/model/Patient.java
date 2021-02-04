@@ -18,9 +18,20 @@ public class Patient implements CRUD{
 	Dossier dossier;
 	DatabaseConnection connect;
 
-/*--- Constructor ---*/
+/*--- Constructors ---*/
 	public Patient() {
 		// empty constructor
+	}
+	
+	public Patient(long numPatient, String nom, String prenom, String CIN, String sexe, String adresse, Date dateNaissance, String telephone) {
+		this.numPatient = numPatient;
+		this.nom = nom;
+		this.prenom = prenom;
+		this.CIN = CIN;
+		this.sexe = sexe;
+		this.adresse = adresse;
+		this.dateNaissance = dateNaissance;
+		this.telephone = telephone;
 	}
 	
 	public Patient(String nom, String prenom, String CIN, String sexe, String adresse, Date dateNaissance, String telephone) {
@@ -35,8 +46,13 @@ public class Patient implements CRUD{
 	
 
 /*--- Getters and Setters ---*/
+	
 	public String getNom() {
 		return nom;
+	}
+
+	public void setNumPatient(long numPatient) {
+		this.numPatient = numPatient;
 	}
 
 	public void setNom(String nom) {
@@ -107,7 +123,7 @@ public class Patient implements CRUD{
 			connect.closeConnection();
 		}
 		catch (Exception e) {
-			System.out.println("fuck you "+e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -189,12 +205,10 @@ public class Patient implements CRUD{
 		try {
 			connect = new DatabaseConnection();
 			
-			String deleteQuery="delete from patient where cin = ?";
+			String deleteQuery="delete from patient where num_patient = " + numPatient;
 			
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(deleteQuery);
-			
-			preparedStmt.setString(1, CIN);
-			
+				
 			preparedStmt.execute();
 			
 			dossier.Supprimer();

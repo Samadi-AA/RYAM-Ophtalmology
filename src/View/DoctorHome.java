@@ -1,323 +1,292 @@
-/***** Author     : Abdessamad AIT OUAKRIM
- ***** Project    : RYAM System
- ***** Professor: Sara ROUBI
- ***** Date       : 28 janv. 2021
- ******************************************/ 
-
-
 package view;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-import java.awt.GridLayout;
+import control.DatabaseConnection;
 
-public class DoctorHome extends JFrame{
-	
-	/*-- Components --*/
-	private JPanel container;
-		private JPanel menuPanel; 
-			private JPanel logoPanel;
-				private JLabel logoLabel;
-			private JPanel menuElementPanel;
-				private JPanel homePanel;
-					private JLabel homeLabel;
-					private JLabel homeIcon;
-				private JPanel patientPanel;
-					private JLabel patientLabel;
-					private JLabel patientIcon;
-				private JPanel rdvPanel;
-					private JLabel rdvLabel;
-					private JLabel rdvIcon;
-				private JPanel signOutPanel;
-					private JLabel signOutLabel;
-					private JLabel signOutIcon;
-		private JLayeredPane contentPane;
-			private JPanel homeContent; 
-			private JLabel homeMsg;
-			private JPanel patientContent;
-			private JLabel PatientMsg;
-			private JPanel rdvContent;
-			private JLabel rdvMsg;
+public class DoctorHome extends JPanel{
+	String num,cin,nom,prenom,sexe,date,adresse,tel;
 	
 	/*-- Design --*/
-	private ImageIcon logoImage = new ImageIcon(DoctorHome.class.getResource("/view/icons/logo.png"));
-	private ImageIcon homeImage = new ImageIcon(DoctorHome.class.getResource("/view/icons/home.png"));
-	private ImageIcon patientImage = new ImageIcon(DoctorHome.class.getResource("/view/icons/patient.png"));
-	private ImageIcon rdvImage = new ImageIcon(DoctorHome.class.getResource("/view/icons/calendar.png"));
-	private ImageIcon signOutImage = new ImageIcon(DoctorHome.class.getResource("/view/icons/signOut.png"));	
+	private ImageIcon patientIcon = new ImageIcon(LoginView.class.getResource("/view/icons/patientInfo.png"));
 	private final Color mainDark = Color.decode("#1a252c");
 	private final Color mainWhite = Color.decode("#eeeeee");
 	private final Color mainGreen = Color.decode("#39b672");
 	private final Font mainFont = new Font("Candara", Font.BOLD, 30);
+	private final Font fieldFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
 
+	public JPanel OrdonanceForm = new JPanel();
+	public GridBagConstraints patientCourantConstraint, OrdonanceFormConstraint;
 	
-	/*-- Constructor --*/
+	
+	
 	
 	public DoctorHome() {
+		getPatientCourant();
+		setBounds(0, 0, 1350, 670);
+		setLayout(new GridBagLayout());
+		//setBackground(mainDark);
+		
+		patientCourantConstraint = new GridBagConstraints();
+		patientCourantConstraint.gridx=0;
+		patientCourantConstraint.gridy=0;
+		patientCourantConstraint.gridwidth=1;
+		patientCourantConstraint.gridheight=1;
+		patientCourantConstraint.weightx=0.5;
+		patientCourantConstraint.weighty = 1;
+		patientCourantConstraint.fill = GridBagConstraints.BOTH;
+		add(new patientCourantInfo(),patientCourantConstraint);
+		
+		OrdonanceFormConstraint = new GridBagConstraints();
+		OrdonanceFormConstraint.gridx=1;
+		OrdonanceFormConstraint.gridy=0;
+		OrdonanceFormConstraint.gridwidth=1;
+		OrdonanceFormConstraint.gridheight=1;
+		OrdonanceFormConstraint.weightx=0.5;
+		OrdonanceFormConstraint.weighty = 1;
+		OrdonanceFormConstraint.fill = GridBagConstraints.HORIZONTAL;
+		add(OrdonanceForm,OrdonanceFormConstraint);
+		
+		JLabel ordonanceFormTestLabel = new JLabel("Espace du formulaire d'ordonance...");
+		ordonanceFormTestLabel.setFont(mainFont);
+		ordonanceFormTestLabel.setForeground(mainGreen);
+		OrdonanceForm.add(ordonanceFormTestLabel);
+		
+	}
+	
+	public class patientCourantInfo extends JPanel{
+		
+		JLabel lblHeader,lblTitle;
+		JLabel lblNom;
+		JPanel nomPanel;
+			JLabel nomField;
+		JLabel lblPrenom;
+		JPanel prenomPanel;
+			JLabel prenomField;
+		JLabel lblCIN;
+		JPanel cinPanel;
+			JLabel cinField;
+		JLabel lblSexe;
+		JPanel sexePanel;
+			JLabel sexeField;
+		JLabel lblBirth;
+		JPanel birthPanel;
+			JLabel birthField;
+		JLabel lblAdresse;
+		JPanel adressePanel;
+			JTextArea adresseField;
+		JLabel lblTel;
+		JPanel telPanel;
+			JLabel telField;
+			
+		public patientCourantInfo() {
+			setLayout(null);
+			setBackground(mainDark);
+			/*--- Header -------------------------------------------------------*/
+			lblTitle = new JLabel("Le Patient Entrant");
+			lblTitle.setBounds(70, 97 , 300, 330);
+			lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			lblTitle.setFont(new Font("Candara", Font.BOLD, 30));
+			lblTitle.setForeground(mainWhite);
+			add(lblTitle);
+			
+			lblHeader = new JLabel("");
+			lblHeader.setBounds(70, 0, 300, 256);
+			lblHeader.setHorizontalAlignment(SwingConstants.CENTER);
+			lblHeader.setIcon(patientIcon);
+			add(lblHeader);
+			
+			/*--- Nom -------------------------------------------------------*/
+			lblNom = new JLabel("Nom");
+			lblNom.setBounds(20, 284, 122, 30);
+			add(lblNom);
+			lblNom.setFont(new Font("Candara", Font.BOLD, 16));
+			lblNom.setForeground(mainWhite);
+			
+			nomPanel = new JPanel();
+			nomPanel.setBounds(150, 284, 254, 30);
+			nomPanel.setLayout(null);
+			nomPanel.setBorder(null);
+			nomPanel.setBackground(mainWhite);
+			add(nomPanel);
+			
+			nomField = new JLabel(nom);
+			nomField.setBounds(5, 0, 252, 30);
+			nomField.setBackground(mainWhite);
+			nomField.setFont(fieldFont);
+			nomField.setBorder(null);
+			nomPanel.add(nomField);
+			
+			/*--- Prenom -------------------------------------------------------*/
+			lblPrenom = new JLabel("Prenom");
+			lblPrenom.setBounds(20, 330, 122, 30);
+			lblPrenom.setForeground(mainWhite);
+			lblPrenom.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblPrenom);
+			
+			prenomPanel = new JPanel();
+			prenomPanel.setBounds(150, 330, 254, 30);
+			prenomPanel.setLayout(null);
+			prenomPanel.setBorder(null);
+			prenomPanel.setBackground(mainWhite);
+			add(prenomPanel);
+			
+			prenomField = new JLabel(prenom);
+			prenomField.setBounds(5, 0, 252, 30);
+			prenomField.setBorder(null);
+			prenomField.setBackground(mainWhite);
+			prenomField.setFont(fieldFont);
+			prenomPanel.add(prenomField);
+			
+			/*--- CIN -------------------------------------------------------*/
+			lblCIN = new JLabel("CIN");
+			lblCIN.setBounds(20, 376, 122, 30);
+			lblCIN.setForeground(mainWhite);
+			lblCIN.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblCIN);
+			
+			cinPanel = new JPanel();
+			cinPanel.setBounds(150, 376, 254, 30);
+			cinPanel.setLayout(null);
+			cinPanel.setBorder(null);
+			cinPanel.setBackground(mainWhite);
+			add(cinPanel);
+			
+			cinField = new JLabel(cin);
+			cinField.setBounds(5, 0, 252, 30);
+			cinField.setBorder(null);
+			cinField.setBackground(mainWhite);
+			cinField.setFont(fieldFont);
+			cinPanel.add(cinField);
+			
+			/*--- Sexe -------------------------------------------------------*/
+			lblSexe = new JLabel("Sexe");
+			lblSexe.setBounds(20, 422, 122, 30);
+			lblSexe.setForeground(mainWhite);
+			lblSexe.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblSexe);
+			
+			sexePanel = new JPanel();
+			sexePanel.setBounds(150, 422, 254, 30);
+			sexePanel.setLayout(null);
+			sexePanel.setBorder(null);
+			sexePanel.setBackground(mainWhite);
+			add(sexePanel);
+			
+			sexeField = new JLabel(sexe);
+			sexeField.setBounds(5, 0, 252, 30);
+			sexeField.setBackground(mainWhite);
+			sexeField.setFont(fieldFont);
+			sexeField.setFocusable(false);
+			sexePanel.add(sexeField);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setResizable(false);
-		container = new JPanel();
-		container.setBackground(mainWhite);
-		setContentPane(container);
-		container.setLayout(new GridBagLayout()); 
-		
-		// set the menu bar : **************************************************
-		menuPanel = new JPanel();
-		menuPanel.setLayout(new GridBagLayout());
-		menuPanel.setBackground(mainDark);
-		
-		GridBagConstraints menuPanelConstraints = new GridBagConstraints();                      // menuPanel's constraints
-		setGridBagCinstraints(menuPanelConstraints, 0, 0, 3, 1, 0.30, 1, GridBagConstraints.BOTH);
-		
-		//set the logo panel in menu bar : //////////////////////////////////////
-		logoPanel = new JPanel();
-		logoPanel.setBackground(mainDark);
-		logoPanel.setLayout(null);
-		
-		GridBagConstraints logoPanelConstraints = new GridBagConstraints();
-		setGridBagCinstraints(logoPanelConstraints, 0, 0, 1, 1, 1, 0.2, GridBagConstraints.BOTH);
-		
-		logoLabel = new JLabel();   // Label for logo icon
-		logoLabel.setBounds(50, 5, 250, 100);
-		logoLabel.setIcon(resizeImage(logoImage, logoLabel.getWidth(), logoLabel.getHeight()));
-		logoPanel.add(logoLabel);
-		
-		menuPanel.add(logoPanel, logoPanelConstraints);
-		
-		menuElementPanel = new JPanel();
-		menuElementPanel.setBackground(mainDark);
-		menuElementPanel.setLayout(new GridLayout(10, 1, 0, 10));
-		
-		GridBagConstraints menuElementPanelConstraints = new GridBagConstraints();
-		setGridBagCinstraints(menuElementPanelConstraints, 0, 1, 1, 4, 1, 0.8, GridBagConstraints.BOTH);
-		
-		//set the home panel in menu bar : //////////////////////////////////////
-		homePanel = new JPanel();
-		homePanel.addMouseListener(new PanelMouseAdapter(homePanel));
-		homePanel.setLayout(null);
-		homePanel.setBackground(mainDark);
-		
-		homeLabel = new JLabel("Accueil");
-		homeLabel.setBounds(70, 10, 100, 40);
-		homeLabel.setFont(mainFont);
-		homeLabel.setForeground(mainWhite);
-		
-		homeIcon = new JLabel();                       // Label for home icon
-		homeIcon.setBounds(25, 4, 40, 40);
-		homeIcon.setIcon(resizeImage(homeImage, 30, 30));
-		
-		homePanel.add(homeIcon);
-		homePanel.add(homeLabel);
-		
-		menuElementPanel.add(homePanel);
-		
-		//set the patient panel in menu bar : //////////////////////////////////////
-		patientPanel = new JPanel();
-		patientPanel.addMouseListener(new PanelMouseAdapter(patientPanel));
-		patientPanel.setLayout(null);
-		patientPanel.setBackground(mainDark);
-		
-		patientLabel = new JLabel("Listes Des Patients");
-		patientLabel.setBounds(70, 10, 250, 40);
-		patientLabel.setFont(mainFont);
-		patientLabel.setForeground(mainWhite);
-		
-		patientIcon = new JLabel();						 // Label for patient icon
-		patientIcon.setBounds(25, 4, 40, 40);
-		patientIcon.setIcon(resizeImage(patientImage, 30, 30));
-		
-		patientPanel.add(patientIcon);
-		patientPanel.add(patientLabel);
-		
-		menuElementPanel.add(patientPanel);
-		
-		//set the rdv panel in menu bar : /////////////////////////////////////////////
-		rdvPanel = new JPanel();
-		rdvPanel.addMouseListener(new PanelMouseAdapter(rdvPanel));
-		rdvPanel.setLayout(null);
-		rdvPanel.setBackground(mainDark);
-		
-		rdvLabel = new JLabel("Listes Des RDVs");
-		rdvLabel.setBounds(70, 10, 250, 40);
-		rdvLabel.setFont(mainFont);
-		rdvLabel.setForeground(mainWhite);
-		
-		rdvIcon = new JLabel();							// Label for rdv icon
-		rdvIcon.setBounds(25, 4, 40, 40);
-		rdvIcon.setIcon(resizeImage(rdvImage, 30, 30));
-		
-		rdvPanel.add(rdvIcon);
-		rdvPanel.add(rdvLabel);
-		
-		menuElementPanel.add(rdvPanel);
-		
-		//set the signOut panel in menu bar : /////////////////////////////////////////
-		signOutPanel = new JPanel();
-		signOutPanel.addMouseListener(new PanelMouseAdapter(signOutPanel));
-		signOutPanel.setLayout(null);
-		signOutPanel.setBackground(mainDark);
-		
-		signOutLabel = new JLabel("Se Deconnecter");
-		signOutLabel.setBounds(70, 10, 250, 40);
-		signOutLabel.setFont(mainFont);
-		signOutLabel.setForeground(mainWhite);
-		
-		signOutIcon = new JLabel();						// Label for log out icon
-		signOutIcon.setBounds(25, 4, 40, 40);
-		signOutIcon.setIcon(resizeImage(signOutImage, 30, 30));
-		
-		signOutPanel.add(signOutIcon);
-		signOutPanel.add(signOutLabel);
-		
-		menuElementPanel.add(signOutPanel);
-		
-		
-		menuPanel.add(menuElementPanel, menuElementPanelConstraints);
-		
-		container.add(menuPanel, menuPanelConstraints);
-		
-		// set the content of main panel ******************************************************
-		contentPane = new JLayeredPane();
-		contentPane.setLayout(null);
+	/*--- Date de naissance -------------------------------------------------------*/
+			lblBirth = new JLabel("Date de naissance");
+			lblBirth.setBounds(20, 468, 122, 30);
+			lblBirth.setForeground(mainWhite);
+			lblBirth.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblBirth);
+			
+			birthPanel = new JPanel();
+			birthPanel.setBounds(150, 468, 254, 30);
+			birthPanel.setLayout(null);
+			birthPanel.setBorder(null);
+			birthPanel.setBackground(mainWhite);
+			add(birthPanel);
 				
-		GridBagConstraints contentPaneConstraints = new GridBagConstraints();		               // constraints for the main Panel
-		setGridBagCinstraints(contentPaneConstraints, 3, 0, 7, 1, 0.7, 1, GridBagConstraints.BOTH);
+			birthField = new JLabel(date);
+	        birthField.setBounds(5, 0, 252, 30);
+	        birthField.setBorder(null);
+	        birthField.setBackground(mainWhite);
+	        birthField.setFont(fieldFont);
+	        birthPanel.add(birthField);
+
+	/*--- Sexe -------------------------------------------------------*/ 
+			lblAdresse = new JLabel("Adresse");
+			lblAdresse.setBounds(20, 514, 122, 30);
+			lblAdresse.setForeground(mainWhite);
+			lblAdresse.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblAdresse);
+			
+			adressePanel = new JPanel();
+			adressePanel.setBounds(150, 514, 254, 60);
+			adressePanel.setLayout(null);
+			adressePanel.setBorder(null);
+			adressePanel.setBackground(mainWhite);
+			add(adressePanel);
+			
+			adresseField = new JTextArea(adresse);
+			adresseField.setBounds(5, 3, 252, 57);
+			adresseField.setBackground(mainWhite);
+			adresseField.setFont(fieldFont);
+			adresseField.setEditable(false);
+			adressePanel.add(adresseField);
+
+	/*--- Telephone -------------------------------------------------------*/
+			lblTel = new JLabel("Telephone");
+			lblTel.setBounds(20, 590, 122, 30);
+			lblTel.setForeground(mainWhite);
+			lblTel.setFont(new Font("Candara", Font.BOLD, 16));
+			add(lblTel);
+			
+			telPanel = new JPanel();
+			telPanel.setBounds(150, 590, 254, 30);
+			telPanel.setLayout(null);
+			telPanel.setBorder(null);
+			telPanel.setBackground(mainWhite);
+			add(telPanel);
+			
+			telField = new JLabel(tel);
+			telField.setBounds(5, 0, 252, 30);
+			telField.setBorder(null);
+			telField.setBackground(mainWhite);
+			telField.setFont(fieldFont);
+			telPanel.add(telField);
+		}
+	}
+	
+	public void getPatientCourant() {
+		try {
+			DatabaseConnection connect = new DatabaseConnection();
+			
+			String selectQuery = "select * from patient where num_patient = (select num_pat_courant from patient_courant)";
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
+						
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+			
+			res = preparedStmt.executeQuery(selectQuery);
 				
-		container.add(contentPane, contentPaneConstraints);
-		
-		/////////////////////////////////////////////////// Just a TEST   //////////////////////////////////////////
-		homeContent = new JPanel();
-		homeContent.setBounds(10, 11, 600, 400);
-		homeContent.setLayout(null);
-		
-		homeMsg = new JLabel("Welcome at home XD");
-		homeMsg.setBounds(200, 250, 200, 20);
-		homeContent.add(homeMsg);
-		
-		patientContent = new JPanel();
-		patientContent.setBounds(10, 11, 600, 400);
-		patientContent.setLayout(null);
-		
-		PatientMsg = new JLabel("La listes des patients");
-		PatientMsg.setBounds(200, 250, 200, 20);
-		patientContent.add(PatientMsg);
-		
-		rdvContent = new JPanel();
-		rdvContent.setBounds(10, 11, 600, 400);
-		rdvContent.setLayout(null);
-		
-		rdvMsg = new JLabel("La listes des RDVs");
-		rdvMsg.setBounds(200, 250, 200, 20);
-		rdvContent.add(rdvMsg);
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	}
-	
-	/*-- set listeners --*/
-	private class PanelMouseAdapter extends MouseAdapter{
-		JPanel panel;
-		
-		public PanelMouseAdapter(JPanel panel) {
-			this.panel = panel;
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-			panel.setBackground(mainGreen);
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			panel.setBackground(new Color(60, 179, 113));
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			panel.setBackground(mainDark);
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			panel.setBackground(Color.green);     // change this color !!!!!!!!  
-			if(e.getComponent() == homePanel) {
-				panelSelected(homeContent);
+	        while (res.next()) {
+	        	num = res.getString("num_patient");
+	        	cin = res.getString("CIN");
+	        	nom = res.getString("nom");
+	        	prenom = res.getString("prenom");
+	        	sexe = res.getString("sexe");
+	        	date = res.getString("date_naissance");
+	        	adresse = res.getString("adresse");
+	        	tel = res.getString("tel");
 			}
-			if(e.getComponent() == patientPanel) {
-				panelSelected(patientContent);
-			}
-			if(e.getComponent() == rdvPanel) {
-				panelSelected(rdvContent);
-			}
-			if(e.getComponent() == signOutPanel) {
-				if(JOptionPane.showConfirmDialog(null, "Vous voullez se decoonecter ?", "Annulation", JOptionPane.YES_NO_OPTION) == 0) {
-					DoctorHome.this.dispose();
-					LoginFrame.launch();
-				}
-			}
+	        					
+			connect.closeConnection();
 		}
-		
-	}
-	
-	/*-- Methods --*/
-	
-	// launch the frame
-	public static void launch() {
-		DoctorHome homeDoctorView = new DoctorHome();
-		homeDoctorView.setVisible(true);
-	}
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DoctorHome.launch();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-	// initialize the image's dimensions :
-		public ImageIcon resizeImage(ImageIcon image, int width, int height) {
-			Image imgScale = image.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-			ImageIcon scaledIcon = new ImageIcon(imgScale);
-			return scaledIcon;
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
 		}
-		
-	// initialize the constraints of a component
-	public void setGridBagCinstraints(GridBagConstraints constraints, int gridx, int gridy, int gridwidth, int gridheight, double weightx, double weighty, int fill) {
-		constraints.gridx = gridx;
-		constraints.gridy = gridy;
-		constraints.gridwidth = gridwidth;
-		constraints.gridheight = gridheight;
-		constraints.weightx = weightx;
-		constraints.weighty = weighty;
-		constraints.fill = fill;
-		}
-	
-	public void panelSelected(JPanel panel) {
-		contentPane.removeAll();
-		contentPane.add(panel);
-		contentPane.repaint();
-		contentPane.revalidate();
 	}
 }

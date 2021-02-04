@@ -1,6 +1,5 @@
 package view;
 
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -21,68 +20,72 @@ import java.time.LocalDateTime;
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import control.DatabaseConnection;
-import model.Patient;
 import model.RDV;
-import view.LoginView;
 
-public class PatientTable {
+public class RDVTable {
 	
-	JTable tablePatient;
-	long selectedPatient;
-	Object[][]listPatient;
+	JTable tableRDV;
+	long selectedRDV;
+	String cin;
+	Object[][]list;
 	/*-- Design --*/
 	private ImageIcon deleteImage = new ImageIcon(LoginView.class.getResource("/view/icons/deleteIcon.png"));
 	private ImageIcon editIcon = new ImageIcon(LoginView.class.getResource("/view/icons/editIcon.png"));
+	private ImageIcon confirmIcon = new ImageIcon(LoginView.class.getResource("/view/icons/confirmIcon.png"));
 	private final Color mainDark = Color.decode("#1a252c");
 	private final Color mainWhite = Color.decode("#eeeeee");
+	private final Color mainGreen = Color.decode("#39b672");
 	private final Font mainFont = new Font("Monospaced", Font.BOLD, 16);
 	
 	
-	public PatientTable() {
+	public RDVTable() {
 		
 	}
 	
 	public JScrollPane getView() { 
         initData();
         
-        String []head= {"Numero","CIN","Nom","Prenom","Sexe","Date de naissance","Adresse","Telephone","Actions"};
+        String []head= {"Numero","CIN","Nom complete","Date de RDV","Actions"};
         
-        tablePatient = new JTable(listPatient, head) {
-			boolean tableBool[]= {false,false,false,false,false,false,false,false,true};
+        tableRDV = new JTable(list, head) {
+			boolean tableBool[]= {false,false,false,false,true};
 			@Override
 		    public boolean isCellEditable(int row, int column) {
 				return tableBool[column];
 		    }
 		};
 
-		tablePatient.setBounds(0, 0, 700, 700);
-	    tablePatient.setBackground(Color.decode("#eeeeee"));
-	    tablePatient.setForeground(mainDark);
-	    tablePatient.setFont(mainFont);
-	    tablePatient.getTableHeader().setOpaque(false);
-	    tablePatient.getTableHeader().setBackground(mainDark);
-	    tablePatient.getTableHeader().setForeground(mainWhite);
-	    tablePatient.getTableHeader().setFont(mainFont);
+		tableRDV.setBounds(0, 0, 700, 700);
+	    tableRDV.setBackground(Color.decode("#eeeeee"));
+	    tableRDV.setForeground(mainDark);
+	    tableRDV.setFont(mainFont);
+	    tableRDV.getTableHeader().setOpaque(false);
+	    tableRDV.getTableHeader().setBackground(mainDark);
+	    tableRDV.getTableHeader().setForeground(mainWhite);
+	    tableRDV.getTableHeader().setFont(mainFont);
 	    //tableRDV.setBorder();
 	    
-	    tablePatient.getColumnModel().getColumn(8).setCellRenderer(new MyRenderer());
-   		tablePatient.getColumnModel().getColumn(8).setCellEditor(new ButtonEditor(new JTextField()));
-   		TableColumn actionColoumn = tablePatient.getColumnModel().getColumn(8);
-   		tablePatient.setRowHeight(45);
-   		actionColoumn.setPreferredWidth(100);
-   		tablePatient.getColumnModel().getColumn(0).setPreferredWidth(1);
+	    tableRDV.getColumnModel().getColumn(4).setCellRenderer(new MyRenderer());
+   		tableRDV.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JTextField()));
+   		TableColumn col4 = tableRDV.getColumnModel().getColumn(4);
+   		tableRDV.setRowHeight(45);
+   		col4.setPreferredWidth(100);
+   		tableRDV.getColumnModel().getColumn(0).setPreferredWidth(1);
    		
-   		JScrollPane scrollPane = new JScrollPane(tablePatient);
+   		JScrollPane scrollPane = new JScrollPane(tableRDV);
    		scrollPane.setBounds(0, 0, 700, 700);
    		
 	    return scrollPane;
@@ -92,8 +95,12 @@ public class PatientTable {
 	public void initData() {
 		try {
 			DatabaseConnection connect = new DatabaseConnection();
+			Date today = new Date(System.currentTimeMillis());
+			Date tomorow = new Date(System.currentTimeMillis()+(24*60*60*1000));
 			
-			String selectQuery = "SELECT * FROM patient";
+			String selectQuery = "SELECT * FROM rdv"
+					+ " WHERE datetime_rdv BETWEEN '" + today.toString()
+					+ "' AND '"+ tomorow.toString() +"'";
 			
 			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
 						
@@ -102,42 +109,31 @@ public class PatientTable {
 			int count = 0, i = 0;
 			
 			while (res.next()) count++;
-						
+			
 			String[] nums = new String[count], 
 					 cins = new String[count],
 					 noms = new String[count],
-					 prenoms = new String[count],
-					 sexes = new String[count],
-					 dates = new String[count],
-					 adresses = new String[count],
-					 tels = new String[count];
+					 dates = new String[count];
 			
 			res = preparedStmt.executeQuery(selectQuery);
-				
+			 
 	        while (res.next()) {
-	        	nums[i] = res.getString("num_patient");
+	        	nums[i] = res.getString("num_rdv");
 	        	cins[i] = res.getString("CIN");
-	        	noms[i] = res.getString("nom");
-	        	prenoms[i] = res.getString("prenom");
-	        	sexes[i] = res.getString("sexe");
-	        	dates[i] = res.getString("date_naissance");
-	        	adresses[i] = res.getString("adresse");
-	        	tels[i] = res.getString("tel");
+	        	noms[i] = res.getString("nom_pat");
+	        	dates[i] = res.getString("datetime_rdv");
 	        	i++;
 			}
 	        
-	        listPatient= new Object[i][9];
+	        
+	        list= new Object[i][5];
 	        
 	        for (int j = 0; j < i; j++) {
-	        	listPatient[j][0] = nums[j];
-	        	listPatient[j][1] = cins[j];
-	        	listPatient[j][2] = noms[j];
-	        	listPatient[j][3] = prenoms[j];
-	        	listPatient[j][4] = sexes[j];
-	        	listPatient[j][5] = dates[j];
-	        	listPatient[j][6] = adresses[j];
-	        	listPatient[j][7] = tels[j];
-	        	listPatient[j][8] = "";
+	        	list[j][0] = nums[j];
+	        	list[j][1] = cins[j];
+	        	list[j][2] = noms[j];
+	        	list[j][3] = dates[j];
+	        	list[j][4] = "";
 			}
 	     						
 			connect.closeConnection();
@@ -145,6 +141,27 @@ public class PatientTable {
 		catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
+	}
+	
+	public long confirmedVisitePatient() {
+		long numPatientCourant = -1;
+		try {
+			DatabaseConnection connect = new DatabaseConnection();
+			
+			String selectQuery = "SELECT num_pat FROM rdv WHERE num_rdv = " + selectedRDV;
+			
+			PreparedStatement preparedStmt = connect.getConnection().prepareStatement(selectQuery);
+						
+			ResultSet res = preparedStmt.executeQuery(selectQuery);
+				
+	        while (res.next()) numPatientCourant = (long) Integer.parseInt(res.getString("num_pat"));
+	        					
+			connect.closeConnection();
+		}
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return numPatientCourant;
 	}
 	
 	class MyRenderer implements TableCellRenderer {
@@ -157,20 +174,29 @@ public class PatientTable {
 			    
 		public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean Focus, int row, int column) {
 			if (isSelected) {
-				selectedPatient = (long) Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+				selectedRDV = (long) Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+				cin = table.getModel().getValueAt(row, 1).toString();
 			}
 			return btnsPanel;
 		}
 	}
 
 	class ButtonEditor extends DefaultCellEditor{
-		protected JButton btnDelete,btnEdit;
+		protected JButton btnDelete,btnEdit,btnConfirm;
 		public JPanel btnsPanel;
 		// constructeur prend par un text
 		public ButtonEditor(JTextField txt) {
 			super(txt);
 			  
 			btnsPanel = new JPanel(new FlowLayout());
+			    
+			btnConfirm = new JButton();
+			btnConfirm.setSize(new Dimension(26,26));
+			btnConfirm.setBackground(mainWhite);
+			btnConfirm.setBorder(new EmptyBorder(2, 0, 0, 0));
+			btnConfirm.setIcon(confirmIcon);
+			btnConfirm.setFocusPainted(false);
+			btnConfirm.setToolTipText("Confirmer la visite");
 				
 			btnEdit = new JButton();
 			btnEdit.setSize(new Dimension(26,26));
@@ -179,8 +205,7 @@ public class PatientTable {
 			btnEdit.setIcon(editIcon);
 			btnEdit.setFocusPainted(false);
 			btnEdit.setToolTipText("Modifer le rondez-vous");
-			btnsPanel.add(btnEdit);
-			
+				       
 			btnDelete = new JButton();
 			btnDelete.setSize(new Dimension(26,26));
 			btnDelete.setBackground(mainWhite);
@@ -188,9 +213,30 @@ public class PatientTable {
 			btnDelete.setIcon(deleteImage);
 			btnDelete.setFocusPainted(false);
 			btnDelete.setToolTipText("Annuler le rondez-vous");
-			btnsPanel.add(btnDelete); 
-
-
+			 
+			btnsPanel.add(btnConfirm);
+			btnsPanel.add(btnEdit);
+			btnsPanel.add(btnDelete);
+			btnsPanel.setSize(200, 50);
+			btnsPanel.setToolTipText("Double click pour accees au actions");
+			
+			btnConfirm.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					super.mouseClicked(e);
+					
+					if(cin.isEmpty()) {
+						RDVConfirmAddPatientForm.launch(selectedRDV, confirmedVisitePatient());
+					}
+					else {
+						RDV rdv = new RDV(selectedRDV);
+						rdv.setNumPatient(confirmedVisitePatient());
+						if(rdv.confirmerVisite() && rdv.Supprimer()) JOptionPane.showMessageDialog(null, "La visite a bien ete confirmer", "Confirmation du visite", JOptionPane.OK_OPTION);						
+					}
+					
+				}
+			});
+			
 			btnEdit.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -202,9 +248,8 @@ public class PatientTable {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					super.mouseClicked(e);
-					Patient p = new Patient();
-					p.setNumPatient(selectedPatient);
-					p.Supprimer();
+					RDV rdv = new RDV(selectedRDV);
+					rdv.Supprimer();					
 				}
 			});
 			
@@ -236,5 +281,4 @@ public class PatientTable {
 	}
 		
 }
-
 

@@ -18,10 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import java.awt.GridLayout;
 
-public class SecretaireView extends JFrame{
+public class DoctorView extends JFrame{
 	
 	/*-- Components --*/
 	private JPanel container;
@@ -40,11 +41,12 @@ public class SecretaireView extends JFrame{
 				private JLabel signOutIcon;
 		private JLayeredPane contentPane;
 			private JPanel rdvTablePanel;
+	
 	/*-- Design --*/
-	private ImageIcon homeImage = new ImageIcon(SecretaireView.class.getResource("/view/icons/home.png"));
-	private ImageIcon patientImage = new ImageIcon(SecretaireView.class.getResource("/view/icons/patient.png"));
-	private ImageIcon rdvImage = new ImageIcon(SecretaireView.class.getResource("/view/icons/calendar.png"));
-	private ImageIcon signOutImage = new ImageIcon(SecretaireView.class.getResource("/view/icons/signOut.png"));	
+	private ImageIcon homeImage = new ImageIcon(DoctorView.class.getResource("/view/icons/home.png"));
+	private ImageIcon patientImage = new ImageIcon(DoctorView.class.getResource("/view/icons/patient.png"));
+	private ImageIcon rdvImage = new ImageIcon(DoctorView.class.getResource("/view/icons/calendar.png"));
+	private ImageIcon signOutImage = new ImageIcon(DoctorView.class.getResource("/view/icons/signOut.png"));	
 	private final Color mainDark = Color.decode("#1a252c");
 	private final Color mainWhite = Color.decode("#eeeeee");
 	private final Color mainGreen = Color.decode("#39b672");
@@ -53,8 +55,8 @@ public class SecretaireView extends JFrame{
 	
 	/*-- Constructor --*/
 	
-	public SecretaireView() {
-		setTitle("Secretaire");
+	public DoctorView() {
+		setTitle("Docteur");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setResizable(false);
@@ -162,10 +164,11 @@ public class SecretaireView extends JFrame{
 		contentPaneConstraints.insets = new Insets(10, 0, 10, 0);
 		
 		container.add(contentPane, contentPaneConstraints);
-		panelSelected(new SecretaireHome());
+		panelSelected(new DoctorHome());
 		homePanel.setBorder(BorderFactory.createMatteBorder(0, 0, homePanel.getHeight(), 0, Color.gray));
 		patientPanel.setBorder(null);
 		rdvPanel.setBorder(null);
+		
 	}
 	
 	/*-- set listeners --*/
@@ -176,7 +179,7 @@ public class SecretaireView extends JFrame{
 			panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			this.panel = panel;
 		}
-
+		
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			panel.setBackground(mainGreen);
@@ -189,9 +192,9 @@ public class SecretaireView extends JFrame{
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			panel.setBackground(Color.gray);      
+			//panel.setBackground(Color.gray);      
 			if(e.getComponent() == homePanel) {
-				panelSelected(new SecretaireHome());
+				panelSelected(new DoctorHome());
 				homePanel.setBorder(BorderFactory.createMatteBorder(0, 0, panel.getHeight(), 0, Color.gray));
 				patientPanel.setBorder(null);
 				rdvPanel.setBorder(null);
@@ -222,7 +225,7 @@ public class SecretaireView extends JFrame{
 			}
 			if(e.getComponent() == signOutPanel) {
 				if(JOptionPane.showConfirmDialog(null, "Vous voullez se decoonecter ?", "Annulation", JOptionPane.YES_NO_OPTION) == 0) {
-					SecretaireView.this.dispose();
+					DoctorView.this.dispose();
 					LoginView.launch();
 				}
 			}
@@ -234,7 +237,7 @@ public class SecretaireView extends JFrame{
 	
 	// launch the frame
 	public static void launch() {
-		SecretaireView homeDoctorView = new SecretaireView();
+		DoctorView homeDoctorView = new DoctorView();
 		homeDoctorView.setVisible(true);
 	}
 

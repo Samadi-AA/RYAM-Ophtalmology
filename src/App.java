@@ -1,13 +1,13 @@
-import view.LoginFrame;
-import view.PatientFrame;
-import view.SecretaireHomeFrame;
+import javax.swing.JOptionPane;
+
+import view.LoginView;
+
 
 public class App {
 
 	public static void main(String[] args) {
-		LoginFrame.launch();
-		//PatientFrame.launch();
-		//SecretaireHomeFrame.launch();
+		LoginView.launch();
+
 	}
 	
 }
